@@ -31,24 +31,24 @@ class TitleController extends Controller
      */
     public function store(Request $request)
     {
-        $titles = $request->validate([
+        $request->validate([
             'title'        => ['required','string','max:255'],
-            'description'  => ['nullable','string'],
+            'description'  => ['required','string', 'max:1000'],
             'type'         => ['required','in:movie,series'],
-            'year'         => ['nullable','integer','between:1900,2100'],
+            'year'         => ['required','integer','between:1900,2100'],
             'is_published' => ['sometimes','boolean'],
         ]);
 
-        $titles = Title::create([
-            'title'       => $titles['title'],
-            'description' => $titles['description'] ?? null,
-            'type'        => $titles['type'],
-            'year'        => $titles['year'] ?? null,
-            'is_published'=> $request->has('is_published') ? (bool)$titles['is_published'] : false,
-            'user_id'     => auth()->id(),
-            'platform_id' => null,
+        $title = new Title();
+        $title['title']        = $request->input('title');
+        $title['description']  = $request->input('description');
+        $title['type']         = $request->input('type');
+        $title['year']         = $request->input('year');
+        $title['user_id']      = auth()->id();
+        $title['platform_id']  = null;                      
+        $title['is_published'] = $request->boolean('is_published');
 
-        ]);
+        $title->save();
         return redirect()->route('titles.index')->with('status', 'Title opgeslagen!');
     }
 

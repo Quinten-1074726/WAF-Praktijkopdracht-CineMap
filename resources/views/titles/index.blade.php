@@ -1,6 +1,7 @@
 <x-app-layout>
   <x-slot name="header">
-    <h2 class="font-semibold text-xl">CineMap – Titles</h2>
+
+    <h2 class="font-semibold text-xl">CineMap – Films & Series</h2>
   </x-slot>
 
   <div class="space-y-3">
