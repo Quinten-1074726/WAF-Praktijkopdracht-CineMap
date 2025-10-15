@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Title extends Model
 {
+    public function platform()
+    {
+        return $this->belongsTo(Platform::class);
+    }
+    
     protected $fillable = [
         'user_id',
         'type',
@@ -16,5 +21,5 @@ class Title extends Model
         'platform_id'
     ];
 
-    
+
 }

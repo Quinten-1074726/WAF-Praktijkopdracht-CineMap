@@ -56,6 +56,18 @@
         </div>
 
         <div>
+        <label for="platform_id" class="block text-sm font-medium text-gray-400">Platform</label>
+        <select name="platform_id" id="platform_id"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+            <option value="" disabled @selected(old('platform_id')===null)> Kies platform </option>
+            @foreach ($platforms as $platform)
+                <option value="{{ $platform->id }}" @selected(old('platform_id')===$platform->id)>{{ $platform->name }}</option>
+            @endforeach
+        </select>
+        @error('platform_id') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
+        </div>
+
+        <div>
         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-400">
             Opslaan
         </button>

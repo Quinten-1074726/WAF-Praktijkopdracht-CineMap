@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Title;
+use App\Models\Platform;    
+
 class TitleController extends Controller
 {
     /**
@@ -23,7 +25,8 @@ class TitleController extends Controller
      */
     public function create()
     {
-        return view('titles.create');
+        $platforms = Platform::all();
+        return view('titles.create', compact('platforms'));
     }
 
     /**
@@ -37,6 +40,7 @@ class TitleController extends Controller
             'type'         => ['required','in:movie,series'],
             'year'         => ['required','integer','between:1900,2100'],
             'is_published' => ['sometimes','boolean'],
+            'platform_id'  => ['required','exists:platforms,id'],
         ]);
 
         $title = new Title();
@@ -45,7 +49,7 @@ class TitleController extends Controller
         $title['type']         = $request->input('type');
         $title['year']         = $request->input('year');
         $title['user_id']      = auth()->id();
-        $title['platform_id']  = null;                      
+        $title['platform_id']  = $request->input('platform_id');
         $title['is_published'] = $request->boolean('is_published');
 
         $title->save();
