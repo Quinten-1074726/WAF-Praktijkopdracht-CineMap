@@ -43,12 +43,14 @@ class TitleController extends Controller
             'platform_id'  => ['required','exists:platforms,id'],
         ]);
 
+        abort_unless($request->user(), 401); 
+        
         $title = new Title();
         $title['title']        = $request->input('title');
         $title['description']  = $request->input('description');
         $title['type']         = $request->input('type');
         $title['year']         = $request->input('year');
-        $title['user_id']      = auth()->id();
+        $title['user_id']      = $request->user()->id;
         $title['platform_id']  = $request->input('platform_id');
         $title['is_published'] = $request->boolean('is_published');
 

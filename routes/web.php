@@ -6,8 +6,9 @@ use App\Http\Controllers\TitleController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('dashboard');
 });
+
 Route::resource('titles', TitleController::class)->only(['index','show','create','store']);
 
 Route::get('/dashboard', function () {
@@ -18,8 +19,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('titles/create', [TitleController::class, 'create'])->name('titles.create');
+    Route::post('titles',        [TitleController::class, 'store'])->name('titles.store');
 });
-
 
 
 require __DIR__.'/auth.php';
