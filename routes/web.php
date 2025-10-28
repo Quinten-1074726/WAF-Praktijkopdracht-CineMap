@@ -8,7 +8,7 @@ use App\Http\Controllers\WatchlistItemController;
 use Illuminate\Support\Facades\Route;
 
 // Publieke routes
-Route::get('/', fn() => view('dashboard'))->name('home');
+Route::get('/', fn() => view('home'))->name('home');
 Route::resource('titles', TitleController::class)->only(['index', 'show']);
 
 // Auth routes

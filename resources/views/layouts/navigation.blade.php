@@ -1,94 +1,135 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
+<nav x-data="{ open: false }" class="bg-navbar text-text-primary border-b border-surface">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
-                </div>
+        <div class="flex h-16 items-center justify-between">
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
+            {{-- Left: logo + name --}}
+            <div class="flex items-center gap-3">
+                <a href="{{ route('home') }}" class="flex items-center gap-2">
+                    <x-application-logo class="block h-7 w-auto fill-current text-text-primary" />
+                    <span class="font-semibold text-lg tracking-wide">CineMap</span>
+                </a>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ auth()->user()->name ?? 'Guest' }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
+            {{-- Center: search (desktop) --}}
+            <div class="hidden md:block flex-1 max-w-xl mx-6">
+                <form action="{{ route('titles.index') }}" method="GET">
+                    <label class="sr-only" for="q">Zoek</label>
+                    <div class="flex">
+                        <input
+                            id="q"
+                            name="q"
+                            type="text"
+                            value="{{ request('q') }}"
+                            placeholder="Zoek films of series…"
+                            class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-gold focus:border-transparent"
+                        />
+                        <button type="submit"
+                            class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
+                            Zoeken
                         </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+                    </div>
+                </form>
             </div>
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+            {{-- Right: auth actions (desktop) --}}
+            <div class="hidden sm:flex items-center gap-3">
+                @guest
+                    <a href="{{ route('login') }}"
+                       class="px-3 py-2 rounded-lg bg-accent-purple hover:opacity-90 transition">
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}"
+                       class="px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                       Maak account
+                    </a>
+                @endguest
+
+                @auth
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button
+                                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                                <span class="text-sm">{{ auth()->user()->name }}</span>
+                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('profile.edit')">
+                                {{ __('Profile') }}
+                            </x-dropdown-link>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-dropdown-link :href="route('logout')"
+                                    onclick="event.preventDefault(); this.closest('form').submit();">
+                                    {{ __('Log Out') }}
+                                </x-dropdown-link>
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                @endauth
+            </div>
+
+            {{-- Mobile hamburger --}}
+            <div class="sm:hidden">
+                <button @click="open = ! open"
+                        class="inline-flex items-center justify-center p-2 rounded-md hover:bg-surface focus:outline-none transition">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
+                              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden"
+                              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+    {{-- Mobile menu --}}
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-surface">
+        <div class="px-4 py-3 space-y-3">
+            {{-- Mobile search --}}
+            <form action="{{ route('titles.index') }}" method="GET">
+                <label class="sr-only" for="q-mobile">Zoek</label>
+                <div class="flex">
+                    <input
+                        id="q-mobile"
+                        name="q"
+                        type="text"
+                        value="{{ request('q') }}"
+                        placeholder="Zoek films of series…"
+                        class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-gold focus:border-transparent"
+                    />
+                    <button type="submit"
+                        class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
+                        Zoeken
+                    </button>
+                </div>
+            </form>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
+            @guest
+                <div class="flex gap-2">
+                    <a href="{{ route('login') }}" class="flex-1 px-3 py-2 rounded-lg bg-accent-purple text-center">Login</a>
+                    <a href="{{ route('register') }}" class="flex-1 px-3 py-2 rounded-lg border border-surface text-center">Maak account</a>
+                </div>
+            @endguest
+
             @auth
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">
-                {{ Auth::user()->name }}
-                </div>
-                <div class="font-medium text-sm text-gray-500">
-                {{ Auth::user()->email }}
-                </div>
-            @else
-                <div class="flex gap-3">
-                <a href="{{ route('login') }}" class="underline">Log in</a>
-                <a href="{{ route('register') }}" class="underline">Register</a>
-                </div>
+                <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md hover:bg-surface">
+                    Profile
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="px-3 py-2">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-3 py-2 rounded-md bg-accent-gold text-background">
+                        Logout
+                    </button>
+                </form>
             @endauth
-            </div>
         </div>
     </div>
 </nav>
