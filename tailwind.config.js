@@ -15,17 +15,16 @@ export default {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                // jouw palette
                 background: "#111827",   // page bg
                 navbar:     "#0B1120",   // top bar
                 surface:    "#1F2937",   // cards/inputs
                 accent: {
-                gold:   "#FACC15",     // kleine details (badges, highlights)
+                gold:   "#FACC15",     // kleine details 
                 purple: "#4D338A",     // primaire knop/links
                 },
                 text: {
                 primary: "#FFFFFF",    // hoofdtekst
-                muted:   "#CBD5E1",    // subtiele tekst
+                muted:   "#CBD5E1",    
                 },
             },
         },

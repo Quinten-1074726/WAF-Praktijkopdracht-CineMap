@@ -21,7 +21,7 @@
                             type="text"
                             value="{{ request('q') }}"
                             placeholder="Zoek films of series…"
-                            class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-gold focus:border-transparent"
+                            class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-purple focus:border-transparent"
                         />
                         <button type="submit"
                             class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
