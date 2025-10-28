@@ -18,13 +18,22 @@ class TitleController extends Controller
      */
     public function index()
     {
+        $q = request('q');
+
         $titles = Title::query()
-            ->with('platform')                 
+            ->with('platform')
+            ->when($q, fn($query) =>
+                $query->where(function($sub) use ($q) {
+                    $sub->where('title', 'like', "%{$q}%")
+                        ->orWhere('description', 'like', "%{$q}%");
+                })
+            )
             ->where('is_published', true)
             ->orderByDesc('year')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
-        return view('titles.index', compact('titles'));
+        return view('titles.index', compact('titles', 'q'));
     }
 
     /**
