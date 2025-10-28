@@ -8,12 +8,19 @@ use App\Models\Platform;
 
 class TitleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified', 'can:admin-access'])->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $titles = Title::where('is_published', true)
+        $titles = Title::query()
+            ->with('platform')                 
+            ->where('is_published', true)
             ->orderByDesc('year')
             ->paginate(12);
 
@@ -42,8 +49,7 @@ class TitleController extends Controller
             'is_published' => ['sometimes','boolean'],
             'platform_id'  => ['required','exists:platforms,id'],
         ]);
-
-        abort_unless($request->user(), 401); 
+ 
         
         $title = new Title();
         $title['title']        = $request->input('title');
@@ -55,15 +61,23 @@ class TitleController extends Controller
         $title['is_published'] = $request->boolean('is_published');
 
         $title->save();
-        return redirect()->route('titles.index')->with('status', 'Title opgeslagen!');
+        return redirect()
+            ->route('titles.index')
+            ->with('status', 'Title opgeslagen!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Title $title)   
+    public function show(Title $title)
     {
-        abort_unless($title->is_published, 404);
+        
+        $canSeeUnpublished = auth()->user()?->can('admin-access') ?? false;
+        if (!$title->is_published && !$canSeeUnpublished) {
+            abort(404);
+        }
+
+        $title->load('platform'); 
         return view('titles.show', compact('title'));
     }
 

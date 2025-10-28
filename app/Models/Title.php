@@ -11,6 +11,21 @@ class Title extends Model
         return $this->belongsTo(Platform::class);
     }
     
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class, 'title_genre');
+    }
+
+    public function watchlistItems()
+    {
+        return $this->hasMany(WatchlistItem::class);
+    }
+
     protected $fillable = [
         'user_id',
         'type',
@@ -19,6 +34,11 @@ class Title extends Model
         'year',
         'is_published',
         'platform_id'
+    ];
+    
+    protected $casts = [
+    'is_published' => 'boolean',
+    'year' => 'integer',
     ];
 
 
