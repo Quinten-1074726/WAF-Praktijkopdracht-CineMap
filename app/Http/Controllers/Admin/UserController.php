@@ -11,10 +11,28 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderByDesc('created_at')->paginate(15);
-        return view('admin.users.index', compact('users'));
+        $q    = trim((string) $request->get('q', ''));
+        $role = $request->get('role');
+
+        $users = User::query()
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhere('email', 'like', "%{$q}%");
+                });
+            })
+            ->when(in_array($role, ['admin','user'], true), fn($query) => $query->where('role', $role))
+            ->orderByDesc('created_at')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.users.index', [
+            'users' => $users,
+            'q'     => $q,
+            'role'  => in_array($role, ['admin','user'], true) ? $role : '',
+        ]);
     }
 
     public function updateRole(Request $request, User $user)
