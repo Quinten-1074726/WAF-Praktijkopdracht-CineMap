@@ -10,7 +10,6 @@
             <span class="text-text-primary font-medium">Titels</span>
         </nav>
 
-        {{-- Header + zoek/filter --}}
         <div class="mb-6">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div class="flex items-center gap-3">
@@ -61,7 +60,6 @@
             </div>
         </div>
 
-        {{-- Flash --}}
         @if (session('status'))
             <div class="mb-5 rounded-xl border border-surface bg-navbar/40 px-4 py-3 text-sm">
                 {{ session('status') }}
@@ -76,7 +74,8 @@
                         <thead class="sticky top-0 bg-navbar/70 backdrop-blur border-b border-surface/70">
                             <tr class="text-left text-text-muted">
                                 <th class="px-4 py-2 font-medium">Titel</th>
-                                <th class="px-4 py-2 font-medium">Type/Jaar</th>
+                                <th class="px-4 py-2 font-medium">Jaar</th>
+                                <th class="px-4 py-2 font-medium">Type</th>
                                 <th class="px-4 py-2 font-medium">Platform</th>
                                 <th class="px-4 py-2 font-medium">Aangemaakt door</th>
                                 <th class="px-4 py-2 font-medium">Status</th>
@@ -86,15 +85,19 @@
                         <tbody>
                             @foreach ($titles as $t)
                                 <tr class="rounded-lg bg-surface/10 hover:bg-surface/25 transition">
-                                    {{-- Titel + kleine meta --}}
                                     <td class="px-4 py-3">
                                         <div class="font-medium">{{ $t->title }}</div>
                                         <div class="text-[11px] text-text-muted">ID: {{ $t->id }}</div>
                                     </td>
 
-                                    {{-- Type/Jaar --}}
+                                    {{-- Jaar --}}
                                     <td class="px-4 py-3">
-                                        {{ ucfirst($t->type) }} • {{ $t->year ?? 'n/a' }}
+                                        {{ $t->year ?? 'n/a' }}
+                                    </td>
+
+                                    {{-- Type --}}
+                                    <td class="px-4 py-3">
+                                        {{ ucfirst($t->type) }} 
                                     </td>
 
                                     {{-- Platform --}}

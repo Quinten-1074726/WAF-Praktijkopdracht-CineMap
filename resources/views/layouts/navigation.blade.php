@@ -2,7 +2,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
 
-            {{-- Left: logo + name --}}
             <div class="flex items-center gap-3">
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
                     <x-application-logo class="block h-7 w-auto fill-current text-text-primary" />
@@ -10,9 +9,8 @@
                 </a>
             </div>
             
-            {{-- Center: search (desktop) --}}
             <div class="hidden md:block flex-1 max-w-xl mx-6">
-                <form action="{{ route('titles.index') }}" method="GET">
+                <form action="{{ route('home') }}" method="GET">
                     <label class="sr-only" for="q">Zoek</label>
                     <div class="flex">
                         <input
@@ -36,7 +34,6 @@
                 Admin
                 </a>
             @endcan
-            {{-- Right: auth actions (desktop) --}}
             <div class="hidden sm:flex items-center gap-3">
                 @guest
                     <a href="{{ route('login') }}"
@@ -78,7 +75,6 @@
                 @endauth
             </div>
 
-            {{-- Mobile hamburger --}}
             <div class="sm:hidden">
                 <button @click="open = ! open"
                         class="inline-flex items-center justify-center p-2 rounded-md hover:bg-surface focus:outline-none transition">
@@ -95,11 +91,9 @@
         </div>
     </div>
 
-    {{-- Mobile menu --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-surface">
         <div class="px-4 py-3 space-y-3">
-            {{-- Mobile search --}}
-            <form action="{{ route('titles.index') }}" method="GET">
+            <form action="{{ route('home') }}" method="GET">
                 <label class="sr-only" for="q-mobile">Zoek</label>
                 <div class="flex">
                     <input

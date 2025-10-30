@@ -1,8 +1,22 @@
 <x-app-layout>
     <div class="max-w-6xl mx-auto px-6 py-8">
 
+        {{-- Home-intro (alleen op / ) --}}
+        @if (request()->routeIs('home'))
+            <div class="mb-6 mx-auto max-w-3xl rounded-xl border border-surface bg-navbar/40 p-4 text-center">
+                @auth
+                    <p class="text-sm">
+                        Welkom, <span class="font-semibold">{{ auth()->user()->name }}</span>
+                    </p>
+                @endauth
+                <p class="mt-1 text-[15px] text-text-muted">
+                    Track je films & series. Zoek, filter en houd je watchlist bij.
+                </p>
+            </div>
+        @endif
+
         {{-- Zoekbalk --}}
-        <form method="GET" action="{{ route('titles.index') }}" class="mb-6">
+        <form method="GET" action="{{ route('home') }}" class="mb-6">
             <div class="flex">
                 <input
                     type="text" name="q" value="{{ $q }}"
@@ -19,14 +33,8 @@
         @if($titles->count())
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($titles as $t)
-                    @php
-                        // Link: gasten worden door middleware toch naar login geleid, maar je kunt ook expliciet:
-                        $url = auth()->check()
-                            ? route('titles.show', $t)
-                            : route('login'); // guests -> login
-                    @endphp
-
-                    <a href="{{ $url }}" class="block rounded-xl border border-surface bg-navbar/40 p-4 hover:bg-surface/30 transition">
+                    <a href="{{ route('titles.show', $t) }}"
+                       class="block rounded-xl border border-surface bg-navbar/40 p-4 hover:bg-surface/30 transition">
                         <div class="font-semibold">{{ $t->title }}</div>
                         <div class="text-xs text-text-muted mt-1">
                             {{ ucfirst($t->type) }} • {{ $t->year ?? 'n/a' }} • {{ $t->platform?->name }}

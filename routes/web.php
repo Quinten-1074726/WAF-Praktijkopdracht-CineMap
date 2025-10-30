@@ -16,28 +16,26 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 /*
 Public routes
 */
-Route::get('/', fn() => view('home'))->name('home');
-Route::get('/titles', [TitleController::class, 'index'])->name('titles.index');
+Route::get('/', [TitleController::class, 'index'])->name('home');
 
-Route::get('/titles/{title}', [TitleController::class, 'show'])
-    ->middleware(['auth','verified'])
-    ->name('titles.show');
-    
+// (optioneel) oude browse-route doorsturen naar home
+Route::redirect('/titles', '/');
+
+// Publieke detailpagina
+Route::get('/titles/{title}', [TitleController::class, 'show'])->name('titles.show');
+
 /*
 Auth routes 
 */
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Dashboard
-    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
-
-    // Users
+    // Profiel
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('watchlist', WatchlistItemController::class)
-        ->only(['index', 'store', 'destroy']);
+    // Watchlist
+    Route::resource('watchlist', WatchlistItemController::class)->only(['index','store','destroy']);
 });
 
 /*
