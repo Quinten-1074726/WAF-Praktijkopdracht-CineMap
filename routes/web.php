@@ -61,6 +61,7 @@ Route::prefix('admin')
         // Users
         Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
         Route::patch('users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.update-role');
+
     });
 
 require __DIR__.'/auth.php';
