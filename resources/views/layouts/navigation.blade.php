@@ -9,7 +9,7 @@
                     <span class="font-semibold text-lg tracking-wide">CineMap</span>
                 </a>
             </div>
-
+            
             {{-- Center: search (desktop) --}}
             <div class="hidden md:block flex-1 max-w-xl mx-6">
                 <form action="{{ route('titles.index') }}" method="GET">
@@ -30,7 +30,12 @@
                     </div>
                 </form>
             </div>
-
+            @can('admin-access')
+                <a href="{{ route('admin.dashboard') }}"
+                class="hidden sm:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                Admin
+                </a>
+            @endcan
             {{-- Right: auth actions (desktop) --}}
             <div class="hidden sm:flex items-center gap-3">
                 @guest

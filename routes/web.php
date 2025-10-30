@@ -1,34 +1,66 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TitleController;
 use App\Http\Controllers\PlatformController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\WatchlistItemController;
-use Illuminate\Support\Facades\Route;
 
-// Publieke routes
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\TitleController as AdminTitleController;
+use App\Http\Controllers\Admin\GenreController as AdminGenreController;
+use App\Http\Controllers\Admin\PlatformController as AdminPlatformController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+
+/*
+Public routes
+*/
 Route::get('/', fn() => view('home'))->name('home');
+
 Route::resource('titles', TitleController::class)->only(['index', 'show']);
 
-// Auth routes
+/*
+Auth routes 
+*/
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Dashboard
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
-    // Profielbeheer
+    // Users
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Admin-only routes
-    Route::middleware('can:admin-access')->group(function () {
-        Route::resource('titles', TitleController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
-        Route::resource('platforms', PlatformController::class);
-        Route::resource('genres', GenreController::class);
-    });
-
-    // Watchlist voor gebruikers
-    Route::resource('watchlist', WatchlistItemController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('watchlist', WatchlistItemController::class)
+        ->only(['index', 'store', 'destroy']);
 });
+
+/*
+Admin routes 
+*/
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', 'verified', 'can:admin-access'])
+    ->group(function () {
+
+        // Admin dashboard
+        Route::get('/', [AdminDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        // Titles 
+        Route::resource('titles', AdminTitleController::class);
+        Route::post('titles/{title}/toggle-publish', [AdminTitleController::class, 'togglePublish'])
+            ->name('titles.toggle-publish');
+
+        // Platforms genres
+        Route::resource('platforms', AdminPlatformController::class);
+        Route::resource('genres', AdminGenreController::class);
+
+        // Users
+        Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::patch('users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.update-role');
+    });
 
 require __DIR__.'/auth.php';
