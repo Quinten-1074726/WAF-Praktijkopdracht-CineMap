@@ -4,31 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Title;
-use App\Models\Platform;    
 
 class TitleController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'verified', 'can:admin-access'])->except(['index', 'show']);
-    }
-
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $q = request('q');
+        $q = $request->get('q');
 
         $titles = Title::query()
             ->with('platform')
-            ->when($q, fn($query) =>
-                $query->where(function($sub) use ($q) {
+            ->where('is_published', true)
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
                     $sub->where('title', 'like', "%{$q}%")
                         ->orWhere('description', 'like', "%{$q}%");
-                })
-            )
-            ->where('is_published', true)
+                });
+            })
             ->orderByDesc('year')
             ->paginate(12)
             ->withQueryString();
@@ -41,8 +35,7 @@ class TitleController extends Controller
      */
     public function create()
     {
-        $platforms = Platform::all();
-        return view('titles.create', compact('platforms'));
+        //
     }
 
     /**
@@ -50,29 +43,7 @@ class TitleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title'        => ['required','string','max:255'],
-            'description'  => ['required','string', 'max:1000'],
-            'type'         => ['required','in:movie,series'],
-            'year'         => ['required','integer','between:1900,2100'],
-            'is_published' => ['sometimes','boolean'],
-            'platform_id'  => ['required','exists:platforms,id'],
-        ]);
- 
-        
-        $title = new Title();
-        $title['title']        = $request->input('title');
-        $title['description']  = $request->input('description');
-        $title['type']         = $request->input('type');
-        $title['year']         = $request->input('year');
-        $title['user_id']      = $request->user()->id;
-        $title['platform_id']  = $request->input('platform_id');
-        $title['is_published'] = $request->boolean('is_published');
-
-        $title->save();
-        return redirect()
-            ->route('titles.index')
-            ->with('status', 'Title opgeslagen!');
+        //
     }
 
     /**
@@ -80,13 +51,14 @@ class TitleController extends Controller
      */
     public function show(Title $title)
     {
-        
-        $canSeeUnpublished = auth()->user()?->can('admin-access') ?? false;
-        if (!$title->is_published && !$canSeeUnpublished) {
+        // middleware('auth') staat al op de route
+        // bescherm ook tegen ongepubliceerde titels voor niet-admins:
+        $isAdmin = auth()->user()?->can('admin-access') ?? false;
+        if (!$title->is_published && !$isAdmin) {
             abort(404);
         }
 
-        $title->load('platform'); 
+        $title->load('platform','genres','user');
         return view('titles.show', compact('title'));
     }
 

@@ -1,13 +1,13 @@
 <x-app-layout>
-  <x-slot name="header">
-    <h2 class="font-semibold text-xl">{{ $title->title }}</h2>
-  </x-slot>
+    <div class="max-w-4xl mx-auto px-6 py-8">
+        <a href="{{ route('titles.index') }}" class="text-sm text-text-muted hover:text-accent-gold">← Terug naar overzicht</a>
 
-  <p class="mb-2 text-gray-100">{{ $title->description ?? 'Geen beschrijving.' }}</p>
-
-  <p class="text-sm text-gray-600">
-    Type: {{ ucfirst($title->type) }} Jaar: {{ $title->year ?? 'n/a' }}
-  </p>
-
-  <a class="underline mt-4 inline-block" href="{{ route('titles.index') }}">← Terug</a>
+        <div class="mt-4 rounded-xl border border-surface bg-navbar/40 p-6">
+            <h1 class="text-2xl font-bold">{{ $title->title }}</h1>
+            <div class="mt-1 text-sm text-text-muted">
+                {{ ucfirst($title->type) }} • {{ $title->year ?? 'n/a' }} • {{ $title->platform?->name }}
+            </div>
+            <p class="mt-4">{{ $title->description ?? 'Geen beschrijving.' }}</p>
+        </div>
+    </div>
 </x-app-layout>

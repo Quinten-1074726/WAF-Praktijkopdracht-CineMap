@@ -17,9 +17,12 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 Public routes
 */
 Route::get('/', fn() => view('home'))->name('home');
+Route::get('/titles', [TitleController::class, 'index'])->name('titles.index');
 
-Route::resource('titles', TitleController::class)->only(['index', 'show']);
-
+Route::get('/titles/{title}', [TitleController::class, 'show'])
+    ->middleware(['auth','verified'])
+    ->name('titles.show');
+    
 /*
 Auth routes 
 */

@@ -1,6 +1,12 @@
 <x-app-layout>
     <div class="max-w-6xl mx-auto px-6 py-8">
-
+    <nav class="flex items-center text-sm text-text-muted mb-6">
+        <a href="{{ route('admin.dashboard') }}" class="hover:text-accent-gold transition">
+            Admin dashboard
+        </a>
+        <span class="mx-2 text-text-muted/60">›</span>
+        <span class="text-text-primary font-medium">Gebruikers</span>
+    </nav>
         {{-- Titel + teller + zoek/filter --}}
         <div class="mb-6">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
