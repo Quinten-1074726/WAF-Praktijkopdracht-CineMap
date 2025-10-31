@@ -11,9 +11,17 @@ class PlatformController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $q = $request->get('q', '');
+
+        $platforms = Platform::withCount('titles')
+            ->when($q, fn($qb) => $qb->where('name', 'like', "%{$q}%"))
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.platforms.index', compact('platforms', 'q'));
     }
 
     /**
@@ -21,7 +29,7 @@ class PlatformController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.platforms.create');
     }
 
     /**
@@ -29,7 +37,14 @@ class PlatformController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:platforms,name'],
+        ]);
+
+        Platform::create($validated);
+
+        return redirect()->route('admin.platforms.index')
+            ->with('status', 'Platform succesvol aangemaakt.');
     }
 
     /**
@@ -45,15 +60,22 @@ class PlatformController extends Controller
      */
     public function edit(Platform $platform)
     {
-        //
+        return view('admin.platforms.edit', compact('platform'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Platform $platform)
+     public function update(Request $request, Platform $platform)
     {
-        //
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:platforms,name,' . $platform->id],
+        ]);
+
+        $platform->update($validated);
+
+        return redirect()->route('admin.platforms.index')
+            ->with('status', 'Platform bijgewerkt.');
     }
 
     /**
@@ -61,6 +83,9 @@ class PlatformController extends Controller
      */
     public function destroy(Platform $platform)
     {
-        //
+        $platform->delete();
+
+        return redirect()->route('admin.platforms.index')
+            ->with('status', 'Platform verwijderd.');
     }
 }
