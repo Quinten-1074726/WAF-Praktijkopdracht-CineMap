@@ -37,22 +37,20 @@
     </div>
 
     <div class="flex items-center gap-2">
-        <input type="checkbox" name="is_published" value="1"
-               @checked(old('is_published', $title->is_published ?? false))>
+        <input type="checkbox" name="is_published" value="1" @checked(old('is_published', $title->is_published ?? false))>
         <span class="text-sm">Gepubliceerd</span>
     </div>
-
     <div class="sm:col-span-2">
         <label class="text-sm">Beschrijving</label>
         <textarea name="description" rows="4"
                   class="mt-1 w-full bg-surface border border-surface/80 rounded-md px-3 py-2">{{ old('description', $title->description ?? '') }}</textarea>
         @error('description') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
     </div>
-    
+
     <div class="sm:col-span-2">
         <label class="text-sm">Poster / Afbeelding</label>
         <input type="file" name="image" accept="image/*"
-                class="mt-1 block w-full bg-surface border border-surface/80 rounded-md px-3 py-2 text-sm">
+               class="mt-1 block w-full bg-surface border border-surface/80 rounded-md px-3 py-2 text-sm">
         @error('image') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
 
         @isset($title)
@@ -64,8 +62,24 @@
         @endisset
     </div>
 
+    @php
+        $selectedGenres = collect(old('genres', isset($title) ? $title->genres->pluck('id')->all() : []));
+    @endphp
+    <div class="sm:col-span-2">
+        <label class="block text-sm mb-1">Genres</label>
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
+            @foreach($genres as $g)
+                <label class="inline-flex items-center gap-2 rounded-md border border-surface/70 bg-surface px-3 py-2 text-sm">
+                    <input type="checkbox" name="genres[]" value="{{ $g->id }}"
+                           @checked($selectedGenres->contains($g->id))>
+                    <span>{{ $g->name }}</span>
+                </label>
+            @endforeach
+        </div>
+        @error('genres')   <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+        @error('genres.*') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+    </div>
 </div>
-
 
 <div class="mt-6">
     <button class="bg-accent-purple text-white px-4 py-2 rounded-lg hover:opacity-90">Opslaan</button>

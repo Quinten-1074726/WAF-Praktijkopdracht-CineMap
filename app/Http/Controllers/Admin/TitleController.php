@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Title;
 use App\Models\Platform;
+use App\Models\Genre;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TitleController extends Controller
 {
@@ -32,7 +34,9 @@ class TitleController extends Controller
     public function create()
     {
         $platforms = Platform::all();
-        return view('admin.titles.create', compact('platforms'));
+        $genres    = Genre::orderBy('name')->get();
+
+        return view('admin.titles.create', compact('platforms','genres'));
     }
 
     public function store(Request $request)
@@ -45,6 +49,10 @@ class TitleController extends Controller
             'is_published' => ['sometimes','boolean'],
             'platform_id'  => ['required','exists:platforms,id'],
             'image'        => ['nullable','image','max:2048','mimes:jpg,jpeg,png,webp'],
+
+            // ⬇︎ nieuw
+            'genres'       => ['nullable','array'],
+            'genres.*'     => ['integer','exists:genres,id'],
         ]);
 
         $data['user_id']      = $request->user()->id;
@@ -54,7 +62,9 @@ class TitleController extends Controller
             $data['image'] = $request->file('image')->store('titles', 'public');
         }
 
-        Title::create($data);
+        $title = Title::create($data);
+
+        $title->genres()->sync($data['genres'] ?? []);
 
         return redirect()->route('admin.titles.index')->with('status','Title opgeslagen');
     }
@@ -62,7 +72,9 @@ class TitleController extends Controller
     public function edit(Title $title)
     {
         $platforms = Platform::all();
-        return view('admin.titles.edit', compact('title','platforms'));
+        $genres    = Genre::orderBy('name')->get();
+
+        return view('admin.titles.edit', compact('title','platforms','genres'));
     }
 
     public function update(Request $request, Title $title)
@@ -75,6 +87,10 @@ class TitleController extends Controller
             'is_published' => ['sometimes','boolean'],
             'platform_id'  => ['required','exists:platforms,id'],
             'image'        => ['nullable','image','max:2048','mimes:jpg,jpeg,png,webp'],
+
+            
+            'genres'       => ['nullable','array'],
+            'genres.*'     => ['integer','exists:genres,id'],
         ]);
 
         $data['is_published'] = $request->boolean('is_published');
@@ -87,6 +103,7 @@ class TitleController extends Controller
         }
 
         $title->update($data);
+        $title->genres()->sync($request->input('genres', []));
 
         return redirect()->route('admin.titles.index')->with('status','Title bijgewerkt');
     }
