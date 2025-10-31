@@ -67,11 +67,12 @@
 
                         <div x-data="{ s: '{{ $item->status }}' }" class="mt-4 rounded-xl border border-surface bg-navbar/40 p-3">
 
-                            <form method="POST" action="{{ route('watchlist.update', $item) }}" class="space-y-3">
+                            {{-- Formulier met velden, nog zonder submit-knop --}}
+                            <form id="wl-{{ $item->id }}" method="POST" action="{{ route('watchlist.update', $item) }}" class="space-y-3">
                                 @csrf @method('PATCH')
 
+                                {{-- Status + (optionele) rating --}}
                                 <div class="flex flex-wrap items-center gap-3">
-                                    {{-- Status dropdown met pijltje --}}
                                     <div class="relative">
                                         <select name="status" x-model="s"
                                                 class="appearance-none w-52 pr-9 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
@@ -79,39 +80,40 @@
                                             <option value="BEZIG">Bezig</option>
                                             <option value="GEZIEN">Gezien</option>
                                         </select>
-                                        <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted">
-                                            ▾
-                                        </span>
+                                        <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted">▾</span>
                                     </div>
 
-                                    {{-- Rating alleen tonen bij GEZIEN --}}
                                     <div x-show="s === 'GEZIEN'" x-cloak>
                                         <input type="number" name="rating" min="1" max="10" value="{{ old('rating', $item->rating) }}"
                                             placeholder="rating (1–10)"
                                             class="w-28 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
                                     </div>
-
-                                    <button class="rounded-lg bg-accent-purple text-white px-4 py-2 text-sm hover:opacity-90">
-                                        Opslaan
-                                    </button>
-
-                                    {{-- Verwijderen rechts --}}
-                                    <form method="POST" action="{{ route('watchlist.destroy', $item) }}" class="ml-auto">
-                                        @csrf @method('DELETE')
-                                        <button class="rounded-lg border border-surface px-4 py-2 text-sm hover:bg-surface">
-                                            Verwijder
-                                        </button>
-                                    </form>
                                 </div>
 
-                                {{-- Review alleen tonen bij GEZIEN --}}
+                                {{-- Review alleen bij GEZIEN --}}
                                 <div x-show="s === 'GEZIEN'" x-cloak>
                                     <textarea name="review" rows="3"
                                             placeholder="Schrijf een korte review (minimaal 10 tekens)…"
                                             class="w-full rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">{{ old('review', $item->review) }}</textarea>
                                 </div>
                             </form>
+
+                            {{-- Knoppenbalk onderaan: Opslaan links, Verwijder rechts --}}
+                            <div class="mt-3 flex items-center justify-between">
+                                <button type="submit" form="wl-{{ $item->id }}"
+                                        class="rounded-lg bg-accent-purple text-white px-4 py-2 text-sm hover:opacity-90">
+                                    Opslaan
+                                </button>
+
+                                <form method="POST" action="{{ route('watchlist.destroy', $item) }}">
+                                    @csrf @method('DELETE')
+                                    <button class="rounded-lg border border-surface px-4 py-2 text-sm hover:bg-surface">
+                                        Verwijder
+                                    </button>
+                                </form>
+                            </div>
                         </div>
+
 
                         @if($item->status === 'GEZIEN')
                             <form method="POST" action="{{ route('watchlist.update', $item) }}" class="mt-3">
