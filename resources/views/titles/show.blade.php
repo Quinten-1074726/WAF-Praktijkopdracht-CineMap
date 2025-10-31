@@ -3,10 +3,11 @@
     <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('home') }}"
        class="text-sm text-text-muted hover:text-accent-gold">← Terug naar overzicht</a>
 
-    <div class="mt-4 grid gap-6 md:grid-cols-[220px,1fr]">
-      {{-- Poster --}}
+    <div class="mt-4 grid gap-6 md:grid-cols-[320px,1fr]">  {{-- was 220px --}}
       <div class="rounded-xl overflow-hidden border border-surface bg-navbar/40">
-        <img src="{{ $title->image_url }}" alt="{{ $title->title }}" class="w-full object-cover">
+        <img src="{{ $title->image_url }}"
+            alt="{{ $title->title }}"
+            class="w-full aspect-[2/3] object-cover">
       </div>
 
       {{-- Info + actions --}}

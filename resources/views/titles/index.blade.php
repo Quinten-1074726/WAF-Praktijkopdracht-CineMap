@@ -48,11 +48,11 @@
                 @auth
                 @php $status = $watchStatuses[$t->id] ?? null; @endphp
                 <div class="px-3 pb-3 -mt-1 flex items-center justify-between">
-                    <span class="text-[11px] text-text-muted">
                     @if($status)
+                    <span class="text-[11px] rounded-md bg-accent-gold/20 border border-accent-gold/30 text-accent-gold px-2 py-1">
                         In watchlist ({{ strtolower(str_replace('_',' ',$status)) }})
-                    @endif
                     </span>
+                    @endif
 
                     @if(!$status)
                     <form method="POST" action="{{ route('watchlist.store') }}">

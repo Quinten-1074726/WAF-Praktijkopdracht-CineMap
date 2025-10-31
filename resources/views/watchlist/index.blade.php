@@ -1,6 +1,10 @@
 <x-app-layout>
     <div class="max-w-6xl mx-auto px-6 py-8">
-
+        <nav class="mb-4 text-sm text-text-muted">
+            <a href="{{ route('home') }}" class="hover:text-accent-gold">Home</a>
+            <span class="mx-2">/</span>
+            <span class="text-text-primary">Watchlist</span>
+        </nav>
         {{-- Header + filters --}}
         <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-3">
@@ -50,48 +54,65 @@
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach($items as $item)
                     <div class="rounded-xl border border-surface bg-navbar/40 p-4">
-                        {{-- optioneel: poster --}}
-                        @php
-                            $poster = $item->title->poster_path
-                                ? asset('storage/'.$item->title->poster_path)
-                                : Vite::asset('resources/images/placeholder-title.jpg');
-                        @endphp
-                        <img src="{{ $poster }}" alt="{{ $item->title->title }}" class="mb-3 w-full aspect-[2/3] object-cover rounded-lg">
+                        <img src="{{ $item->title->image_url }}"
+                            alt="{{ $item->title->title }}"
+                            class="mb-3 w-full aspect-[2/3] object-cover rounded-lg">
 
                         <a href="{{ route('titles.show', $item->title) }}" class="font-semibold hover:underline">
                             {{ $item->title->title }}
                         </a>
                         <div class="text-xs text-text-muted mt-1">
-                            {{ ucfirst($item->title->type) }} • {{ $item->title->year ?? 'n/a' }} • {{ $item->title->platform?->name }}
+                            {{ ucfirst($item->title->type) }} - {{ $item->title->year ?? 'n/a' }} - {{ $item->title->platform?->name }}
                         </div>
 
-                        <div class="mt-3 flex items-center justify-between">
-                            {{-- Update status/rating --}}
-                            <form method="POST" action="{{ route('watchlist.update', $item) }}" class="flex items-center gap-2">
+                        <div x-data="{ s: '{{ $item->status }}' }" class="mt-4 rounded-xl border border-surface bg-navbar/40 p-3">
+
+                            <form method="POST" action="{{ route('watchlist.update', $item) }}" class="space-y-3">
                                 @csrf @method('PATCH')
-                                <select name="status" class="rounded-md bg-surface border border-surface/70 px-2 py-1 text-xs">
-                                    <option value="WIL_KIJKEN" @selected($item->status==='WIL_KIJKEN')>Wil kijken</option>
-                                    <option value="BEZIG"      @selected($item->status==='BEZIG')>Bezig</option>
-                                    <option value="GEZIEN"     @selected($item->status==='GEZIEN')>Gezien</option>
-                                </select>
-                                <input type="number" name="rating" min="1" max="10" value="{{ $item->rating }}"
-                                       placeholder="rating"
-                                       class="w-16 rounded-md bg-surface border border-surface/70 px-2 py-1 text-xs">
-                                <button class="text-xs rounded-md bg-accent-purple text-white px-3 py-1 hover:opacity-90">
-                                    Opslaan
-                                </button>
-                            </form>
 
-                            {{-- Verwijderen --}}
-                            <form method="POST" action="{{ route('watchlist.destroy', $item) }}">
-                                @csrf @method('DELETE')
-                                <button class="text-xs rounded-md border border-surface px-3 py-1 hover:bg-surface">
-                                    Verwijder
-                                </button>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    {{-- Status dropdown met pijltje --}}
+                                    <div class="relative">
+                                        <select name="status" x-model="s"
+                                                class="appearance-none w-52 pr-9 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                                            <option value="WIL_KIJKEN">Wil kijken</option>
+                                            <option value="BEZIG">Bezig</option>
+                                            <option value="GEZIEN">Gezien</option>
+                                        </select>
+                                        <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted">
+                                            ▾
+                                        </span>
+                                    </div>
+
+                                    {{-- Rating alleen tonen bij GEZIEN --}}
+                                    <div x-show="s === 'GEZIEN'" x-cloak>
+                                        <input type="number" name="rating" min="1" max="10" value="{{ old('rating', $item->rating) }}"
+                                            placeholder="rating (1–10)"
+                                            class="w-28 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                                    </div>
+
+                                    <button class="rounded-lg bg-accent-purple text-white px-4 py-2 text-sm hover:opacity-90">
+                                        Opslaan
+                                    </button>
+
+                                    {{-- Verwijderen rechts --}}
+                                    <form method="POST" action="{{ route('watchlist.destroy', $item) }}" class="ml-auto">
+                                        @csrf @method('DELETE')
+                                        <button class="rounded-lg border border-surface px-4 py-2 text-sm hover:bg-surface">
+                                            Verwijder
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {{-- Review alleen tonen bij GEZIEN --}}
+                                <div x-show="s === 'GEZIEN'" x-cloak>
+                                    <textarea name="review" rows="3"
+                                            placeholder="Schrijf een korte review (minimaal 10 tekens)…"
+                                            class="w-full rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">{{ old('review', $item->review) }}</textarea>
+                                </div>
                             </form>
                         </div>
 
-                        {{-- Review veld (optioneel) --}}
                         @if($item->status === 'GEZIEN')
                             <form method="POST" action="{{ route('watchlist.update', $item) }}" class="mt-3">
                                 @csrf @method('PATCH')

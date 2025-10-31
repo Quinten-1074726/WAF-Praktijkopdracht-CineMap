@@ -88,14 +88,20 @@ class WatchlistItemController extends Controller
      */
     public function update(Request $request, WatchlistItem $watchlistItem)
     {
-        // Pak het item gegarandeerd uit de watchlist van de ingelogde user
         $item = $request->user()->watchlist()->findOrFail($watchlistItem->id);
 
-        $data = $request->validate([
-            'status' => ['required','in:WIL_KIJKEN,BEZIG,GEZIEN'],
-            'rating' => ['nullable','integer','between:1,10'],
-            'review' => ['nullable','string','max:2000'],
-        ]);
+        $rules = [
+            'status' => ['required', 'in:WIL_KIJKEN,BEZIG,GEZIEN'],
+            'rating' => ['nullable', 'integer', 'between:1,10'],
+            'review' => ['nullable', 'string', 'max:2000'],
+        ];
+
+        if ($request->input('status') === 'GEZIEN') {
+            $rules['rating'] = ['required', 'integer', 'between:1,10'];
+            $rules['review'] = ['required', 'string', 'min:10', 'max:2000'];
+        }
+
+        $data = $request->validate($rules);
 
         $item->update($data);
 
