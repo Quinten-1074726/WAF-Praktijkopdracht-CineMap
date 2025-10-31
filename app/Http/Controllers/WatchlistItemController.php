@@ -98,26 +98,25 @@ class WatchlistItemController extends Controller
             ->where('status', 'GEZIEN')
             ->count();
 
+        $canRate = $seenCount >= 5;
+
         $rules = [
             'status' => ['required', 'in:WIL_KIJKEN,BEZIG,GEZIEN'],
-            'rating' => ['nullable','integer','between:1,10','prohibited_unless:status,GEZIEN'],
-            'review' => ['nullable','string','max:2000','prohibited_unless:status,GEZIEN'],
+            'rating' => ['nullable', 'integer', 'between:1,10'],
+            'review' => ['nullable', 'string', 'max:2000'],
         ];
 
-        if ($request->input('status') === 'GEZIEN') {
-            if ($seenCount < 5) {
-                return back()
-                    ->withErrors([
-                        'review' => 'Je hebt minimaal 5 titels op “Gezien” nodig om een rating/review te plaatsen.'
-                    ])
-                    ->withInput();
-            }
-
-            $rules['rating'] = ['required','integer','between:1,10'];
-            $rules['review'] = ['required','string','min:10','max:2000'];
+        if ($request->input('status') === 'GEZIEN' && $canRate) {
+            $rules['rating'] = ['required', 'integer', 'between:1,10'];
+            $rules['review'] = ['required', 'string', 'min:10', 'max:2000'];
         }
 
         $data = $request->validate($rules);
+
+        if ($request->input('status') === 'GEZIEN' && ! $canRate) {
+            $data['rating'] = null;
+            $data['review'] = null;
+        }
 
         $item->update($data);
 

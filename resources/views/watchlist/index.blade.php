@@ -110,10 +110,8 @@
 
                             <div class="mt-3 flex items-center justify-between">
                             <button type="submit" form="wl-{{ $item->id }}"
-                                    :disabled="s === 'GEZIEN' && !canRate"
-                                    :class="(s === 'GEZIEN' && !canRate) ? 'opacity-50 cursor-not-allowed' : ''"
                                     class="rounded-lg bg-accent-purple text-white px-4 py-2 text-sm hover:opacity-90">
-                                Opslaan
+                            Opslaan
                             </button>
 
                             <form method="POST" action="{{ route('watchlist.destroy', $item) }}">
@@ -123,21 +121,6 @@
                                 </button>
                             </form>
                         </div>
-
-                        @if($item->status === 'GEZIEN')
-                            <form method="POST" action="{{ route('watchlist.update', $item) }}" class="mt-3">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="{{ $item->status }}">
-                                <textarea name="review" rows="2"
-                                          placeholder="Schrijf een korte review (optioneel)…"
-                                          class="w-full rounded-md bg-surface border border-surface/70 px-3 py-2 text-sm">{{ $item->review }}</textarea>
-                                <div class="mt-2 text-right">
-                                    <button class="text-xs rounded-md bg-accent-purple text-white px-3 py-1 hover:opacity-90">
-                                        Review opslaan
-                                    </button>
-                                </div>
-                            </form>
-                        @endif
                     </div>
                 @endforeach
             </div>
