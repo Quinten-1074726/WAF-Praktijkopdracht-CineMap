@@ -10,9 +10,9 @@
 
         <h1 class="text-2xl font-semibold mb-4">Titel bewerken</h1>
 
-        <form method="POST" action="{{ route('admin.titles.update', $title) }}">
+        <form method="POST" action="{{ route('admin.titles.update', $title) }}" enctype="multipart/form-data">
             @method('PUT')
-            @include('admin.titles._form', ['title' => $title])
+            @include('admin.titles._form', ['title' => $title, 'platforms' => $platforms])
         </form>
     </div>
 </x-app-layout>

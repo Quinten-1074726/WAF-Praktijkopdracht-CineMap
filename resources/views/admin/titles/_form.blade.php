@@ -48,7 +48,24 @@
                   class="mt-1 w-full bg-surface border border-surface/80 rounded-md px-3 py-2">{{ old('description', $title->description ?? '') }}</textarea>
         @error('description') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
     </div>
+    
+    <div class="sm:col-span-2">
+        <label class="text-sm">Poster / Afbeelding</label>
+        <input type="file" name="image" accept="image/*"
+                class="mt-1 block w-full bg-surface border border-surface/80 rounded-md px-3 py-2 text-sm">
+        @error('image') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+
+        @isset($title)
+            @if($title->image)
+                <div class="mt-2">
+                    <img src="{{ $title->image_url }}" alt="Huidige poster" class="h-32 rounded-md object-cover">
+                </div>
+            @endif
+        @endisset
+    </div>
+
 </div>
+
 
 <div class="mt-6">
     <button class="bg-accent-purple text-white px-4 py-2 rounded-lg hover:opacity-90">Opslaan</button>

@@ -44,10 +44,15 @@ class TitleController extends Controller
             'year'         => ['required','integer','between:1900,2100'],
             'is_published' => ['sometimes','boolean'],
             'platform_id'  => ['required','exists:platforms,id'],
+            'image'        => ['nullable','image','max:2048','mimes:jpg,jpeg,png,webp'],
         ]);
 
         $data['user_id']      = $request->user()->id;
         $data['is_published'] = $request->boolean('is_published');
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('titles', 'public');
+        }
 
         Title::create($data);
 
@@ -69,9 +74,17 @@ class TitleController extends Controller
             'year'         => ['required','integer','between:1900,2100'],
             'is_published' => ['sometimes','boolean'],
             'platform_id'  => ['required','exists:platforms,id'],
+            'image'        => ['nullable','image','max:2048','mimes:jpg,jpeg,png,webp'],
         ]);
 
         $data['is_published'] = $request->boolean('is_published');
+
+        if ($request->hasFile('image')) {
+            if ($title->image) {
+                Storage::disk('public')->delete($title->image);
+            }
+            $data['image'] = $request->file('image')->store('titles', 'public');
+        }
 
         $title->update($data);
 
@@ -80,7 +93,11 @@ class TitleController extends Controller
 
     public function destroy(Title $title)
     {
+        if ($title->image) {
+            Storage::disk('public')->delete($title->image);
+        }
         $title->delete();
+
         return back()->with('status','Title verwijderd');
     }
 

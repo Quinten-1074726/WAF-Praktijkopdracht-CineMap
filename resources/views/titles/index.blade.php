@@ -29,19 +29,23 @@
             </div>
         </form>
 
-        {{-- Grid met titels --}}
         @if($titles->count())
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                 @foreach ($titles as $t)
                     <a href="{{ route('titles.show', $t) }}"
-                       class="block rounded-xl border border-surface bg-navbar/40 p-4 hover:bg-surface/30 transition">
-                        <div class="font-semibold">{{ $t->title }}</div>
-                        <div class="text-xs text-text-muted mt-1">
-                            {{ ucfirst($t->type) }} • {{ $t->year ?? 'n/a' }} • {{ $t->platform?->name }}
+                    class="group rounded-xl overflow-hidden border border-surface bg-navbar/40 hover:bg-surface/30 transition">
+
+                        {{-- Poster --}}
+                        <img src="{{ $t->image_url }}" alt="{{ $t->title }}"
+                            class="w-full aspect-[2/3] object-cover transition group-hover:scale-[1.01] duration-200">
+
+                        {{-- Info --}}
+                        <div class="p-3">
+                            <div class="font-semibold truncate">{{ $t->title }}</div>
+                            <div class="text-xs text-text-muted">
+                                {{ ucfirst($t->type) }} • {{ $t->year ?? 'n/a' }} • {{ $t->platform?->name }}
+                            </div>
                         </div>
-                        <p class="text-sm mt-2 line-clamp-3 text-text-muted">
-                            {{ $t->description }}
-                        </p>
                     </a>
                 @endforeach
             </div>
