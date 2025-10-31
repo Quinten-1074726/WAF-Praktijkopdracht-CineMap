@@ -27,7 +27,12 @@ class TitleController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('titles.index', compact('titles', 'q'));
+            
+        $watchStatuses = collect();
+            if (auth()->check()) {
+                $watchStatuses = auth()->user()->watchlist()->pluck('status','title_id');
+            }
+            return view('titles.index', compact('titles','q','watchStatuses'));
     }
 
     /**
@@ -51,15 +56,17 @@ class TitleController extends Controller
      */
     public function show(Title $title)
     {
-        // middleware('auth') staat al op de route
-        // bescherm ook tegen ongepubliceerde titels voor niet-admins:
         $isAdmin = auth()->user()?->can('admin-access') ?? false;
         if (!$title->is_published && !$isAdmin) {
             abort(404);
         }
 
         $title->load('platform','genres','user');
-        return view('titles.show', compact('title'));
+        $inWatchlist = auth()->check()
+            ? auth()->user()->watchlist()->where('title_id',$title->id)->first()
+            : null;
+
+        return view('titles.show', compact('title','inWatchlist'));
     }
 
     /**

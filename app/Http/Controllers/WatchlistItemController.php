@@ -7,12 +7,34 @@ use Illuminate\Http\Request;
 
 class WatchlistItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // GET /watchlist
+    public function index(Request $request)
     {
-        //
+        $user = $request->user();
+
+        $status = $request->get('status');  
+        $q      = $request->get('q');        
+
+        $items = WatchlistItem::query()
+            ->with(['title.platform'])
+            ->where('user_id', $user->id)
+            ->when($status, fn($qb) => $qb->where('status', $status))
+            ->when($q, function ($qb) use ($q) {
+                $qb->whereHas('title', function ($sub) use ($q) {
+                    $sub->where('title', 'like', "%{$q}%")
+                        ->orWhere('description', 'like', "%{$q}%");
+                });
+            })
+            ->orderByDesc('created_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        $counts = WatchlistItem::selectRaw('status, COUNT(*) as c')
+            ->where('user_id', $user->id)
+            ->groupBy('status')
+            ->pluck('c','status');
+
+        return view('watchlist.index', compact('items','status','q','counts'));
     }
 
     /**
@@ -28,7 +50,21 @@ class WatchlistItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'title_id' => ['required','exists:titles,id'],
+            'status'   => ['nullable','in:WIL_KIJKEN,BEZIG,GEZIEN'],
+        ]);
+
+        $data['user_id'] = $request->user()->id;
+        $data['status']  = $data['status'] ?? 'WIL_KIJKEN';
+
+        // voorkom UNIQUE-fout (user_id + title_id)
+        WatchlistItem::updateOrCreate(
+            ['user_id' => $data['user_id'], 'title_id' => $data['title_id']],
+            ['status' => $data['status']]
+        );
+
+        return back()->with('status', 'Toegevoegd aan je watchlist.');
     }
 
     /**
@@ -52,14 +88,28 @@ class WatchlistItemController extends Controller
      */
     public function update(Request $request, WatchlistItem $watchlistItem)
     {
-        //
+        // Pak het item gegarandeerd uit de watchlist van de ingelogde user
+        $item = $request->user()->watchlist()->findOrFail($watchlistItem->id);
+
+        $data = $request->validate([
+            'status' => ['required','in:WIL_KIJKEN,BEZIG,GEZIEN'],
+            'rating' => ['nullable','integer','between:1,10'],
+            'review' => ['nullable','string','max:2000'],
+        ]);
+
+        $item->update($data);
+
+        return back()->with('status', 'Watchlist-item bijgewerkt.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(WatchlistItem $watchlistItem)
+    public function destroy(Request $request, WatchlistItem $watchlistItem)
     {
-        //
+        $item = $request->user()->watchlist()->findOrFail($watchlistItem->id);
+        $item->delete();
+
+        return back()->with('status', 'Verwijderd uit je watchlist.');
     }
 }

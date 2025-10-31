@@ -1,7 +1,6 @@
 <x-app-layout>
     <div class="max-w-6xl mx-auto px-6 py-8">
 
-        {{-- Home-intro (alleen op / ) --}}
         @if (request()->routeIs('home'))
             <div class="mb-6 mx-auto max-w-3xl rounded-xl border border-surface bg-navbar/40 p-4 text-center">
                 @auth
@@ -30,31 +29,52 @@
         </form>
 
         @if($titles->count())
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                @foreach ($titles as $t)
-                    <a href="{{ route('titles.show', $t) }}"
-                    class="group rounded-xl overflow-hidden border border-surface bg-navbar/40 hover:bg-surface/30 transition">
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            @foreach ($titles as $t)
+            <div class="group rounded-xl overflow-hidden border border-surface bg-navbar/40 hover:bg-surface/30 transition">
+                {{-- Klikbare info (poster + tekst) --}}
+                <a href="{{ route('titles.show', $t) }}" class="block">
+                <img src="{{ $t->image_url }}" alt="{{ $t->title }}"
+                    class="w-full aspect-[2/3] object-cover transition group-hover:scale-[1.01] duration-200">
+                <div class="p-3">
+                    <div class="font-semibold truncate">{{ $t->title }}</div>
+                    <div class="text-xs text-text-muted">
+                    {{ ucfirst($t->type) }} - {{ $t->year ?? 'n/a' }} - {{ $t->platform?->name }}
+                    </div>
+                </div>
+                </a>
 
-                        {{-- Poster --}}
-                        <img src="{{ $t->image_url }}" alt="{{ $t->title }}"
-                            class="w-full aspect-[2/3] object-cover transition group-hover:scale-[1.01] duration-200">
+                {{-- Watchlist actions (alleen ingelogd) --}}
+                @auth
+                @php $status = $watchStatuses[$t->id] ?? null; @endphp
+                <div class="px-3 pb-3 -mt-1 flex items-center justify-between">
+                    <span class="text-[11px] text-text-muted">
+                    @if($status)
+                        In watchlist ({{ strtolower(str_replace('_',' ',$status)) }})
+                    @endif
+                    </span>
 
-                        {{-- Info --}}
-                        <div class="p-3">
-                            <div class="font-semibold truncate">{{ $t->title }}</div>
-                            <div class="text-xs text-text-muted">
-                                {{ ucfirst($t->type) }} • {{ $t->year ?? 'n/a' }} • {{ $t->platform?->name }}
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
+                    @if(!$status)
+                    <form method="POST" action="{{ route('watchlist.store') }}">
+                        @csrf
+                        <input type="hidden" name="title_id" value="{{ $t->id }}">
+                        <button class="text-[11px] rounded-md bg-accent-purple text-white px-2.5 py-1 hover:opacity-90">
+                        + Watchlist
+                        </button>
+                    </form>
+                    @endif
+                </div>
+                @endauth
             </div>
+            @endforeach
+        </div>
 
-            <div class="mt-6">
-                {{ $titles->links() }}
-            </div>
+        <div class="mt-6">
+            {{ $titles->links() }}
+        </div>
         @else
-            <p class="text-text-muted">Geen titels gevonden.</p>
+        <p class="text-text-muted">Geen titels gevonden.</p>
         @endif
+
     </div>
 </x-app-layout>

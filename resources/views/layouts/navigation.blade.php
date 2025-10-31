@@ -28,6 +28,12 @@
                     </div>
                 </form>
             </div>
+            @auth
+                <a href="{{ route('watchlist.index') }}"
+                    class="hidden md:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                    Watchlist
+                </a>
+            @endauth
             @can('admin-access')
                 <a href="{{ route('admin.dashboard') }}"
                 class="hidden sm:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
@@ -117,7 +123,12 @@
                     <a href="{{ route('register') }}" class="flex-1 px-3 py-2 rounded-lg border border-surface text-center">Maak account</a>
                 </div>
             @endguest
-
+            @auth
+                <a href="{{ route('watchlist.index') }}"
+                class="hidden sm:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                Watchlist
+                </a>
+            @endauth
             @auth
                 <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md hover:bg-surface">
                     Profile
