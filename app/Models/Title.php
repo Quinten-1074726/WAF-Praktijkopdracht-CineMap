@@ -26,6 +26,13 @@ class Title extends Model
         return $this->hasMany(WatchlistItem::class);
     }
 
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->image) {
+            return asset('storage/'.$this->image);
+        }
+        return asset('images/placeholder-title.jpg');
+    }
     protected $fillable = [
         'user_id',
         'type',
@@ -33,13 +40,14 @@ class Title extends Model
         'description',
         'year',
         'is_published',
-        'platform_id'
+        'platform_id',
+        'image',
     ];
     
     protected $casts = [
     'is_published' => 'boolean',
     'year' => 'integer',
+    'image' => 'string',
     ];
-
 
 }
