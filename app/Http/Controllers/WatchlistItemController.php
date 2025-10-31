@@ -34,7 +34,11 @@ class WatchlistItemController extends Controller
             ->groupBy('status')
             ->pluck('c','status');
 
-        return view('watchlist.index', compact('items','status','q','counts'));
+        $seenCount = WatchlistItem::where('user_id', $user->id)
+            ->where('status', 'GEZIEN')
+            ->count();
+
+        return view('watchlist.index', compact('items','status','q','counts','seenCount'));
     }
 
     /**
@@ -86,19 +90,31 @@ class WatchlistItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, WatchlistItem $watchlistItem)
+    public function update(Request $request, WatchlistItem $watchlist)
     {
-        $item = $request->user()->watchlist()->findOrFail($watchlistItem->id);
+        $item = $request->user()->watchlist()->findOrFail($watchlist->id);
+
+        $seenCount = $request->user()->watchlist()
+            ->where('status', 'GEZIEN')
+            ->count();
 
         $rules = [
             'status' => ['required', 'in:WIL_KIJKEN,BEZIG,GEZIEN'],
-            'rating' => ['nullable', 'integer', 'between:1,10'],
-            'review' => ['nullable', 'string', 'max:2000'],
+            'rating' => ['nullable','integer','between:1,10','prohibited_unless:status,GEZIEN'],
+            'review' => ['nullable','string','max:2000','prohibited_unless:status,GEZIEN'],
         ];
 
         if ($request->input('status') === 'GEZIEN') {
-            $rules['rating'] = ['required', 'integer', 'between:1,10'];
-            $rules['review'] = ['required', 'string', 'min:10', 'max:2000'];
+            if ($seenCount < 5) {
+                return back()
+                    ->withErrors([
+                        'review' => 'Je hebt minimaal 5 titels op “Gezien” nodig om een rating/review te plaatsen.'
+                    ])
+                    ->withInput();
+            }
+
+            $rules['rating'] = ['required','integer','between:1,10'];
+            $rules['review'] = ['required','string','min:10','max:2000'];
         }
 
         $data = $request->validate($rules);
@@ -111,9 +127,9 @@ class WatchlistItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, WatchlistItem $watchlistItem)
+    public function destroy(Request $request, WatchlistItem $watchlist)
     {
-        $item = $request->user()->watchlist()->findOrFail($watchlistItem->id);
+        $item = $request->user()->watchlist()->findOrFail($watchlist->id);
         $item->delete();
 
         return back()->with('status', 'Verwijderd uit je watchlist.');

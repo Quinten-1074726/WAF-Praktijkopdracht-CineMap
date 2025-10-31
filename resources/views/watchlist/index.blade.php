@@ -36,7 +36,6 @@
             </form>
         </div>
 
-        {{-- Status-badges --}}
         <div class="mb-4 flex gap-2 text-xs text-text-muted">
             <span class="rounded-md border border-surface bg-navbar/40 px-2 py-1">Wil kijken: {{ $counts['WIL_KIJKEN'] ?? 0 }}</span>
             <span class="rounded-md border border-surface bg-navbar/40 px-2 py-1">Bezig: {{ $counts['BEZIG'] ?? 0 }}</span>
@@ -65,55 +64,65 @@
                             {{ ucfirst($item->title->type) }} - {{ $item->title->year ?? 'n/a' }} - {{ $item->title->platform?->name }}
                         </div>
 
-                        <div x-data="{ s: '{{ $item->status }}' }" class="mt-4 rounded-xl border border-surface bg-navbar/40 p-3">
-
-                            {{-- Formulier met velden, nog zonder submit-knop --}}
+                        <div
+                            x-data="{
+                                s: '{{ $item->status }}',
+                                canRate: {{ $seenCount >= 5 ? 'true' : 'false' }}
+                            }"
+                            class="mt-4 rounded-xl border border-surface bg-navbar/40 p-3"
+                        >
                             <form id="wl-{{ $item->id }}" method="POST" action="{{ route('watchlist.update', $item) }}" class="space-y-3">
-                                @csrf @method('PATCH')
+                            @csrf @method('PATCH')
 
-                                {{-- Status + (optionele) rating --}}
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <div class="relative">
-                                        <select name="status" x-model="s"
-                                                class="appearance-none w-52 pr-9 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
-                                            <option value="WIL_KIJKEN">Wil kijken</option>
-                                            <option value="BEZIG">Bezig</option>
-                                            <option value="GEZIEN">Gezien</option>
-                                        </select>
-                                        <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted">▾</span>
-                                    </div>
-
-                                    <div x-show="s === 'GEZIEN'" x-cloak>
-                                        <input type="number" name="rating" min="1" max="10" value="{{ old('rating', $item->rating) }}"
-                                            placeholder="rating (1–10)"
-                                            class="w-28 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
-                                    </div>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <div class="relative">
+                                <select name="status" x-model="s"
+                                        class="appearance-none w-52 pr-9 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                                    <option value="WIL_KIJKEN">Wil kijken</option>
+                                    <option value="BEZIG">Bezig</option>
+                                    <option value="GEZIEN">Gezien</option>
+                                </select>
+                                <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted">▾</span>
                                 </div>
 
-                                {{-- Review alleen bij GEZIEN --}}
                                 <div x-show="s === 'GEZIEN'" x-cloak>
-                                    <textarea name="review" rows="3"
-                                            placeholder="Schrijf een korte review (minimaal 10 tekens)…"
-                                            class="w-full rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">{{ old('review', $item->review) }}</textarea>
+                                <input type="number" name="rating" min="1" max="10"
+                                        value="{{ old('rating', $item->rating) }}"
+                                        placeholder="rating (1–10)"
+                                        :disabled="!canRate"
+                                        class="w-28 rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">
                                 </div>
+                            </div>
+
+                            <div x-show="s === 'GEZIEN'" x-cloak>
+                                <template x-if="!canRate">
+                                <p class="mb-2 text-xs text-yellow-300">
+                                    Je hebt minimaal 5 titels op “Gezien” nodig om een rating/review te plaatsen.
+                                </p>
+                                </template>
+
+                                <textarea name="review" rows="3"
+                                        placeholder="Schrijf een korte review (minimaal 10 tekens)…"
+                                        :disabled="!canRate"
+                                        class="w-full rounded-lg bg-surface border border-surface/70 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-purple">{{ old('review', $item->review) }}</textarea>
+                            </div>
                             </form>
 
-                            {{-- Knoppenbalk onderaan: Opslaan links, Verwijder rechts --}}
                             <div class="mt-3 flex items-center justify-between">
-                                <button type="submit" form="wl-{{ $item->id }}"
-                                        class="rounded-lg bg-accent-purple text-white px-4 py-2 text-sm hover:opacity-90">
-                                    Opslaan
+                            <button type="submit" form="wl-{{ $item->id }}"
+                                    :disabled="s === 'GEZIEN' && !canRate"
+                                    :class="(s === 'GEZIEN' && !canRate) ? 'opacity-50 cursor-not-allowed' : ''"
+                                    class="rounded-lg bg-accent-purple text-white px-4 py-2 text-sm hover:opacity-90">
+                                Opslaan
+                            </button>
+
+                            <form method="POST" action="{{ route('watchlist.destroy', $item) }}">
+                                @csrf @method('DELETE')
+                                <button class="rounded-lg border border-surface px-4 py-2 text-sm hover:bg-surface">
+                                Verwijder
                                 </button>
-
-                                <form method="POST" action="{{ route('watchlist.destroy', $item) }}">
-                                    @csrf @method('DELETE')
-                                    <button class="rounded-lg border border-surface px-4 py-2 text-sm hover:bg-surface">
-                                        Verwijder
-                                    </button>
-                                </form>
-                            </div>
+                            </form>
                         </div>
-
 
                         @if($item->status === 'GEZIEN')
                             <form method="POST" action="{{ route('watchlist.update', $item) }}" class="mt-3">
