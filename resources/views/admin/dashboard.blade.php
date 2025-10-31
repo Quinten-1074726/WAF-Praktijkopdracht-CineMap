@@ -41,6 +41,14 @@
                     Bekijk platforms
                 </a>
             </div>
+            <div class="rounded-xl border border-surface bg-navbar/40 p-5">
+                <h3 class="font-semibold text-lg">Genres</h3>
+                <p class="text-3xl mt-2">{{ \App\Models\Genre::count() }}</p>
+                <a href="{{ route('admin.genres.index') }}"
+                class="inline-block mt-4 text-sm border border-surface px-3 py-1.5 rounded-md hover:bg-surface">
+                    Bekijk genres
+                </a>
+            </div>
         </div>
     </div>
 </x-app-layout>

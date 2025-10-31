@@ -11,9 +11,17 @@ class GenreController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $q = $request->get('q', '');
+
+        $genres = \App\Models\Genre::withCount('titles')
+            ->when($q, fn($qb) => $qb->where('name', 'like', "%{$q}%"))
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.genres.index', compact('genres', 'q'));
     }
 
     /**
@@ -21,7 +29,7 @@ class GenreController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.genres.create');
     }
 
     /**
@@ -29,7 +37,14 @@ class GenreController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:genres,name'],
+        ]);
+
+        Genre::create($data);
+
+        return redirect()->route('admin.genres.index')
+            ->with('status', 'Genre toegevoegd.');
     }
 
     /**
@@ -45,7 +60,7 @@ class GenreController extends Controller
      */
     public function edit(Genre $genre)
     {
-        //
+        return view('admin.genres.edit', compact('genre'));
     }
 
     /**
@@ -53,7 +68,14 @@ class GenreController extends Controller
      */
     public function update(Request $request, Genre $genre)
     {
-        //
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', "unique:genres,name,{$genre->id}"],
+        ]);
+
+        $genre->update($data);
+
+        return redirect()->route('admin.genres.index')
+            ->with('status', 'Genre bijgewerkt.');
     }
 
     /**
@@ -61,6 +83,8 @@ class GenreController extends Controller
      */
     public function destroy(Genre $genre)
     {
-        //
+        $genre->delete();
+
+        return back()->with('status', 'Genre verwijderd.');
     }
 }
