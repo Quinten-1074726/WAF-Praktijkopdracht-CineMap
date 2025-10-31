@@ -15,6 +15,88 @@ Elke sectie krijgt de volgende structuur:
 
 ## 📅 Changelog
 
+### **31 oktober 2025**
+**FIX: Security fix to save watchlist item**  
+- 404-fout bij opslaan van watchlist opgelost (route model binding gefixt).  
+- Validatie aangescherpt en eigenaar-check toegevoegd bij updates/verwijderingen.  
+
+**FIX: Watchlist status fix en extra beveiliging**  
+- Validatie toegevoegd voor toegestane statussen (`WIL_KIJKEN`, `BEZIG`, `GEZIEN`).  
+- Logica toegevoegd zodat gebruikers pas een review/rating kunnen plaatsen na minimaal 5 “Gezien”-titels.  
+- Frontend (Alpine.js) bijgewerkt: velden worden automatisch uitgeschakeld als gebruiker nog niet genoeg gezien heeft.  
+
+**ADD: Genres aan titels**  
+- Koppeltabel toegevoegd tussen titels en genres (`title_genre`).  
+- Titels kunnen nu meerdere genres hebben.  
+- Admin kan genres selecteren bij het aanmaken/bewerken van titels.  
+
+**ADD: Platform CRUD voor admin**  
+- Beheerpagina toegevoegd voor platforms (aanmaken, bewerken, verwijderen).  
+- Validatie op unieke naam toegevoegd.  
+- Seeder gemaakt met standaardplatforms (Netflix, Disney+, Prime Video, HBO Max).  
+
+**ADD: Genres CRUD voor admin**  
+- Admin kan genres aanmaken, bewerken en verwijderen via dashboard.  
+- Seeder met 10 standaardgenres toegevoegd.  
+
+**UPDATE: Styling watchlist**  
+- Layout verbeterd: duidelijkere scheiding tussen kaarten, knoppen en formulieren.  
+- Nieuwe dynamische velden voor status/rating/review met Alpine.js.  
+
+**ADD: Watchlist pagina en functies**  
+- Nieuwe pagina voor watchlist-overzicht per gebruiker.  
+- Functies toegevoegd voor toevoegen, bewerken, filteren en verwijderen van titels uit watchlist.  
+
+**ADD: Afbeeldingen toegevoegd aan titels**  
+- Nieuwe migratie voor afbeeldingskolom bij `titles`-tabel.  
+- Controllers en views aangepast zodat posters getoond worden.  
+- Alle bestaande titels voorzien van voorbeeldafbeeldingen.  
+
+---
+
+### **30 oktober 2025**
+**ADD: Admin dashboard, routes en controllers**  
+- Nieuw admin-dashboard toegevoegd met overzicht van gebruikers, titels en platforms.  
+- Navigatie en toegangscontrole toegevoegd voor admins.  
+
+**ADD: Edit user role als admin**  
+- Beheerders kunnen nu de rol van gebruikers aanpassen (gebruiker ↔ admin).  
+
+**ADD: Filters en zoekfunctie op admin titels**  
+- Zoekbalk en filteropties toegevoegd aan de admin-pagina voor titels.  
+- Mogelijkheid om ongepubliceerde titels te filteren.  
+
+**ADD: Admin CRUD voor titels**  
+- Volledige CRUD-functionaliteit voor titels binnen admin-dashboard.  
+- Mogelijkheid om titels te publiceren of te verbergen.  
+- Beelduploads toegevoegd voor titels.  
+
+**FIX: Homepage met titels en detailpagina**  
+- Publieke homepage toont nu alle gepubliceerde titels in grid-layout.  
+- Detailpagina’s tonen titel, beschrijving, jaar, type, genres en platform.  
+
+---
+
+### **28 oktober 2025**
+**ADD: Seeders voor basisdata (titels en gebruikers)**  
+- Seeder toegevoegd voor admin en standaardgebruiker.  
+- Seeder voor titels met o.a. Goodfellas, Inception, Gladiator, Dune: Part Two, Interstellar, Game of Thrones, Band of Brothers, The Sopranos, Rome en Breaking Bad.  
+
+**ADD: Alle migraties en relaties toegevoegd en gefixt**  
+- Relaties tussen Titles, Platforms, Genres en Watchlist-items gecontroleerd en hersteld.  
+- Pivot-tabel toegevoegd voor koppeling tussen titles en genres.  
+
+---
+
+### **27 oktober 2025**
+**UPDATE: Navbar en algemene styling toegevoegd**  
+- Navigatiebalk gestyled in eigen CineMap-huisstijl (donker thema + accentkleuren).  
+- Zoekveld toegevoegd aan navbar.  
+- Basislayout (containers, kaarten, kleuren, knoppen) opgemaakt met Tailwind.  
+- Consistente spacing en kleurgebruik toegepast op alle pagina’s.  
+
+---
+
 ### **21 oktober 2025**
 **Fix: Create title auth fix**  
 - Validatie en authenticatie verbeterd bij het opslaan van titels.  
