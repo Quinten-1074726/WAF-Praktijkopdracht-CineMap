@@ -14,6 +14,28 @@ Hieronder komen de logboeken per dag (vanaf les 3).
 Elke sectie krijgt de volgende structuur:
 
 ## 📅 Changelog
+### **2 november 2025**
+**ADD: Filterfunctie op homepage**  
+- Nieuwe filterbalk met type, platform, jaarrange en meerdere genres (Alpine dropdown met badges).  
+- Resultaten behouden via `withQueryString()`.
+
+**UPDATE: Navbar & zoekbalk**  
+- Zoekveld verborgen op home, watchlist en adminpagina’s.  
+- Watchlist- en Admin-knop apart weergegeven (policy gebaseerd).  
+- Styling verbeterd (hover, spacing).
+
+**ADD: Preview bij poster-upload (admin)**  
+- Live preview bij uploaden van posterafbeeldingen.  
+- Knop om afbeelding te verwijderen/resetten.  
+- Ondersteunt jpg, png en webp (max 2MB).
+
+**UPDATE: Genres verplicht bij titel**  
+- Minimaal één genre vereist bij aanmaken/bewerken titel.  
+- Validatie server- en client-side.
+
+**FIX: Filter & Alpine gedrag**  
+- Dropdown visueel verbeterd en beter gesynchroniseerd met geselecteerde genres.  
+- Kleine UI/UX fixes op filter- en navigatiecomponenten.
 
 ### **31 oktober 2025**
 **FIX: Security fix to save watchlist item**  
