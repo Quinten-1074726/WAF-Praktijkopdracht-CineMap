@@ -2,7 +2,6 @@
     <div class="mx-auto max-w-6xl px-4 py-8"> {{-- was py-16, nu strakker --}}
         <div class="text-center">
 
-            {{-- Compacte banner: welkom + tagline samen --}}
             <div class="mx-auto max-w-3xl rounded-xl border border-surface bg-navbar/40 p-4">
                 @auth
                     <p class="text-sm">
@@ -14,7 +13,6 @@
                 </p>
             </div>
 
-            {{-- Cards dichter eronder --}}
             <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div class="rounded-xl border border-surface bg-navbar/40 p-5">
                     <h3 class="font-semibold flex items-center gap-2">

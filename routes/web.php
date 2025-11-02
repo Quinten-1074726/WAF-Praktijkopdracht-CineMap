@@ -18,7 +18,6 @@ Public routes
 */
 Route::get('/', [TitleController::class, 'index'])->name('home');
 
-// (optioneel) oude browse-route doorsturen naar home
 Route::redirect('/titles', '/');
 
 // Publieke detailpagina

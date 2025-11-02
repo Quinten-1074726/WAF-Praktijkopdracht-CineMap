@@ -72,7 +72,6 @@ class WatchlistItemController extends Controller
         $data['user_id'] = $request->user()->id;
         $data['status']  = $data['status'] ?? 'WIL_KIJKEN';
 
-        // voorkom UNIQUE-fout (user_id + title_id)
         WatchlistItem::updateOrCreate(
             ['user_id' => $data['user_id'], 'title_id' => $data['title_id']],
             ['status' => $data['status']]

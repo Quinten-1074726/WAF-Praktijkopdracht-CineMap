@@ -41,10 +41,7 @@ class UserController extends Controller
             'role' => ['required', 'in:admin,user'],
         ]);
 
-        // Zorg dat 'role' mass-assignable is óf gebruik forceFill:
-        $user->update(['role' => $data['role']]);   // <-- vereist 'role' in $fillable
-        // alternatief zonder fillable:
-        // $user->forceFill(['role' => $data['role']])->save();
+        $user->update(['role' => $data['role']]);  
 
         return back()->with('status', "Rol van {$user->name} aangepast naar {$user->role}");
     }

@@ -67,14 +67,13 @@
             @endif
         </div>
 
-        {{-- Flash --}}
         @if (session('status'))
             <div class="mb-5 rounded-xl border border-surface bg-navbar/40 px-4 py-3 text-sm">
                 {{ session('status') }}
             </div>
         @endif
 
-        {{-- Tabelkaart --}}
+        {{-- tabel --}}
         <div class="rounded-xl border border-surface bg-navbar/40 p-4">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm border-separate border-spacing-y-2">

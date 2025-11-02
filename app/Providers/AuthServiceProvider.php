@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Gate;
 class AuthServiceProvider extends ServiceProvider
 {
     protected $policies = [
-        // Model => Policy mapping (mag leeg blijven)
     ];
 
     public function boot(): void

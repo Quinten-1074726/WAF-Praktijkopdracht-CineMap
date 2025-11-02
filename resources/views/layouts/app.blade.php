@@ -37,7 +37,7 @@
         <footer class="bg-navbar text-text-muted text-center py-4 text-sm border-t border-surface">
             © {{ date('Y') }} CineMap — All rights reserved.
         </footer>
-
+        @stack('scripts')
     </div>
 </body>
 </html>

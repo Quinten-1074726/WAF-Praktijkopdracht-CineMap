@@ -50,9 +50,8 @@ class TitleController extends Controller
             'platform_id'  => ['required','exists:platforms,id'],
             'image'        => ['nullable','image','max:2048','mimes:jpg,jpeg,png,webp'],
 
-            // ⬇︎ nieuw
-            'genres'       => ['nullable','array'],
-            'genres.*'     => ['integer','exists:genres,id'],
+            'genres'   => ['required','array','min:1'],
+            'genres.*' => ['integer','exists:genres,id'],
         ]);
 
         $data['user_id']      = $request->user()->id;
@@ -89,8 +88,8 @@ class TitleController extends Controller
             'image'        => ['nullable','image','max:2048','mimes:jpg,jpeg,png,webp'],
 
             
-            'genres'       => ['nullable','array'],
-            'genres.*'     => ['integer','exists:genres,id'],
+            'genres'   => ['required','array','min:1'],
+            'genres.*' => ['integer','exists:genres,id'],
         ]);
 
         $data['is_published'] = $request->boolean('is_published');

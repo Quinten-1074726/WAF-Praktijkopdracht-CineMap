@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="max-w-3xl mx-auto px-6 py-8">
         <nav class="mb-4 text-sm text-text-muted">
-            <a href="{{ route('admin.genres.index') }}" class="hover:text-accent-gold">← Terug naar genres</a>
+            <a href="{{ route('admin.genres.index') }}" class="hover:text-accent-gold">< Terug naar genres</a>
         </nav>
 
         <h1 class="text-2xl font-semibold mb-6">Nieuw genre</h1>

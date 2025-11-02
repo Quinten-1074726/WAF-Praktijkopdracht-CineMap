@@ -11,7 +11,11 @@
         <h1 class="text-2xl font-semibold mb-4">Nieuwe titel</h1>
 
         <form method="POST" action="{{ route('admin.titles.store') }}" enctype="multipart/form-data">
-            @include('admin.titles._form', ['title' => new \App\Models\Title, 'platforms' => $platforms])
+            @include('admin.titles._form', [
+                'title' => new \App\Models\Title,
+                'platforms' => $platforms,
+                'genres' => $genres,
+            ])
         </form>
     </div>
 </x-app-layout>

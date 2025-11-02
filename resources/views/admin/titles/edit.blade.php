@@ -12,7 +12,11 @@
 
         <form method="POST" action="{{ route('admin.titles.update', $title) }}" enctype="multipart/form-data">
             @method('PUT')
-            @include('admin.titles._form', ['title' => $title, 'platforms' => $platforms])
+            @include('admin.titles._form', [
+                'title' => $title,
+                'platforms' => $platforms,
+                'genres' => $genres,
+            ])
         </form>
     </div>
 </x-app-layout>

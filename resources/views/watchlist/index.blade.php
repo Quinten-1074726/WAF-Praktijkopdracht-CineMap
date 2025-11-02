@@ -33,7 +33,7 @@
                     </select>
                 </div>
 
-                {{-- Genres (compacte dropdown) --}}
+                {{-- Genres--}}
                 <div class="w-72" x-data="{ open:false }">
                     <label class="text-xs text-text-muted">Genres</label>
                     <div class="relative">
