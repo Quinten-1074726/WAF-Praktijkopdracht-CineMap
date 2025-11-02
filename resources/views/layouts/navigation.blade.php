@@ -8,7 +8,7 @@
                     <span class="font-semibold text-lg tracking-wide">CineMap</span>
                 </a>
             </div>
-            
+            @unless (request()->routeIs('home'))
             <div class="hidden md:block flex-1 max-w-xl mx-6">
                 <form action="{{ route('home') }}" method="GET">
                     <label class="sr-only" for="q">Zoek</label>
@@ -22,12 +22,13 @@
                             class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-purple focus:border-transparent"
                         />
                         <button type="submit"
-                            class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
+                                class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
                             Zoeken
                         </button>
                     </div>
                 </form>
             </div>
+            @endunless
             @auth
                 <a href="{{ route('watchlist.index') }}"
                     class="hidden md:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">

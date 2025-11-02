@@ -28,6 +28,115 @@
             </div>
         </form>
 
+        {{-- Filters --}}
+        <form method="GET" action="{{ route('home') }}" class="mb-6">
+        <input type="hidden" name="q" value="{{ $q }}"/>
+
+        <div class="flex flex-col gap-3 md:flex-row md:items-end md:gap-4">
+            <div class="w-full md:w-40">
+            <label class="text-xs text-text-muted">Type</label>
+            <select name="type"
+                    class="w-full rounded-lg bg-surface border border-surface/80 px-3 py-2 text-sm">
+                <option value="">Alle</option>
+                <option value="movie"  @selected(($type ?? '')==='movie')>Movie</option>
+                <option value="series" @selected(($type ?? '')==='series')>Series</option>
+            </select>
+            </div>
+            <div class="w-full md:w-52">
+            <label class="text-xs text-text-muted">Platform</label>
+            <select name="platform"
+                    class="w-full rounded-lg bg-surface border border-surface/80 px-3 py-2 text-sm">
+                <option value="">Alle</option>
+                @foreach($platforms as $p)
+                <option value="{{ $p->id }}" @selected(($platformId ?? null) == $p->id)>{{ $p->name }}</option>
+                @endforeach
+            </select>
+            </div>
+            <div>
+            <label class="text-xs text-text-muted">Jaar van</label>
+            <input type="number" name="year_from" value="{{ $yearFrom ?: '' }}" placeholder="2000"
+                    class="w-28 rounded-lg bg-surface border border-surface/80 px-3 py-2 text-sm" placeholder="2000">
+            </div>
+            <div>
+            <label class="text-xs text-text-muted">Jaar tot</label>
+            <input type="number" name="year_to"   value="{{ $yearTo   ?: '' }}" placeholder="2025"
+                    class="w-28 rounded-lg bg-surface border border-surface/80 px-3 py-2 text-sm" placeholder="2025">
+            </div>
+
+            <div class="w-full md:w-72" x-data="{ open:false }">
+            <label class="text-xs text-text-muted">Genres</label>
+
+            <div class="relative">
+                <button type="button"
+                        @click="open = !open"
+                        class="w-full flex items-center justify-between rounded-lg bg-surface border border-surface/80 px-3 py-2 text-sm hover:bg-surface/70">
+                <span class="truncate">
+                    Genres
+                    @php $selected = collect($genreIds ?? []); @endphp
+                    @if($selected->count() > 0)
+                    ({{ $selected->count() }} gekozen)
+                    @endif
+                </span>
+                <span class="text-text-muted">▾</span>
+                </button>
+                <div x-show="open" x-transition @click.outside="open=false"
+                    class="absolute z-20 mt-1 w-[22rem] rounded-xl border border-surface bg-navbar/95 backdrop-blur shadow-xl">
+                <div class="p-3 grid grid-cols-2 gap-2 max-h-56 overflow-auto">
+                    @foreach($genres as $g)
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" name="genres[]"
+                            value="{{ $g->id }}"
+                            @checked(collect($genreIds)->contains($g->id))
+                            class="rounded border-surface/70 bg-surface">
+                        <span>{{ $g->name }}</span>
+                    </label>
+                    @endforeach
+                </div>
+
+                <div class="flex items-center justify-between border-t border-surface/70 px-3 py-2">
+                    <button type="button"
+                            class="text-xs text-text-muted hover:text-text-primary"
+                            @click="$el.closest('[x-data]').querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false)">
+                    Reset alle genres
+                    </button>
+                    <button type="button" class="text-xs rounded-md bg-accent-purple text-white px-3 py-1 hover:opacity-90"
+                            @click="open=false">
+                    Klaar
+                    </button>
+                </div>
+                </div>
+            </div>
+            @php
+                $chosen = ($genreIds ?? []);
+                $preview = $genres->whereIn('id', $chosen)->take(3);
+                $extra = max(0, count($chosen) - $preview->count());
+            @endphp
+            @if(!empty($chosen))
+                <div class="mt-1 flex flex-wrap gap-1">
+                @foreach($preview as $g)
+                    <span class="rounded-md bg-surface/40 border border-surface/70 px-2 py-0.5 text-[11px]">{{ $g->name }}</span>
+                @endforeach
+                @if($extra > 0)
+                    <span class="text-[11px] text-text-muted">+{{ $extra }}</span>
+                @endif
+                </div>
+            @endif
+            </div>
+
+            <div class="flex gap-2">
+            <button class="rounded-lg bg-accent-purple text-white px-4 py-2 text-sm hover:opacity-90">
+                Filteren
+            </button>
+            @if($q || $type || $platformId || $yearFrom || $yearTo || !empty($genreIds))
+                <a href="{{ route('home') }}"
+                class="rounded-lg border border-surface px-3 py-2 text-sm hover:bg-surface">
+                Reset
+                </a>
+            @endif
+            </div>
+        </div>
+        </form>
+
         @if($titles->count())
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
             @foreach ($titles as $t)

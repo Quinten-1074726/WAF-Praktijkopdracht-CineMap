@@ -18,12 +18,10 @@
 <body class="font-sans antialiased bg-background text-text-primary">
     <div class="min-h-screen flex flex-col">
         
-        {{-- Navbar --}}
         <nav class="bg-navbar text-text-primary border-b border-surface shadow-sm">
             @include('layouts.navigation')
         </nav>
 
-        {{-- Page Header (optioneel) --}}
         @isset($header)
             <header class="bg-navbar/80 backdrop-blur-sm border-b border-surface">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -32,12 +30,10 @@
             </header>
         @endisset
 
-        {{-- Main content --}}
         <main class="flex-1">
             {{ $slot }}
         </main>
 
-        {{-- Footer (optioneel) --}}
         <footer class="bg-navbar text-text-muted text-center py-4 text-sm border-t border-surface">
             © {{ date('Y') }} CineMap — All rights reserved.
         </footer>
