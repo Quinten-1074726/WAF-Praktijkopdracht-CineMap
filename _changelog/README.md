@@ -15,6 +15,9 @@ Elke sectie krijgt de volgende structuur:
 
 ## 📅 Changelog
 ### **2 november 2025**
+**Afronden van code**
+- final commit en versie maken
+- OTAP voorbereiden  
 **ADD: Filterfunctie op homepage**  
 - Nieuwe filterbalk met type, platform, jaarrange en meerdere genres met Alpine.  
 
