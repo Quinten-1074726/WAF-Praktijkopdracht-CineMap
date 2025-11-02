@@ -1,3 +1,4 @@
+#!/bin/sh
 set -e
 
 php -r "file_exists('.env') || copy('.env.example', '.env');" || true
