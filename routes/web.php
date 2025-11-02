@@ -35,8 +35,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Watchlist
-        Route::resource('watchlist', \App\Http\Controllers\WatchlistItemController::class)
-        ->only(['index','store','update','destroy']);
+    Route::resource('watchlist', WatchlistItemController::class)
+        ->only(['index','store','update','destroy'])
+        ->middleware('can:use-watchlist');
 });
 
 /*

@@ -152,27 +152,36 @@
                     </div>
                 </div>
                 </a>
-
                 {{-- Watchlist actions (alleen ingelogd) --}}
                 @auth
-                @php $status = $watchStatuses[$t->id] ?? null; @endphp
-                <div class="px-3 pb-3 -mt-1 flex items-center justify-between">
-                    @if($status)
-                    <span class="text-[11px] rounded-md bg-accent-gold/20 border border-accent-gold/30 text-accent-gold px-2 py-1">
-                        In watchlist ({{ strtolower(str_replace('_',' ',$status)) }})
-                    </span>
-                    @endif
+                    @can('use-watchlist')
+                        @php $status = $watchStatuses[$t->id] ?? null; @endphp
+                        <div class="px-3 pb-3 -mt-1 flex items-center justify-between">
+                            @if($status)
+                                <span class="text-[11px] rounded-md bg-accent-gold/20 border border-accent-gold/30 text-accent-gold px-2 py-1">
+                                    In watchlist ({{ strtolower(str_replace('_',' ',$status)) }})
+                                </span>
+                            @endif
 
-                    @if(!$status)
-                    <form method="POST" action="{{ route('watchlist.store') }}">
-                        @csrf
-                        <input type="hidden" name="title_id" value="{{ $t->id }}">
-                        <button class="text-[11px] rounded-md bg-accent-purple text-white px-2.5 py-1 hover:opacity-90">
-                        + Watchlist
-                        </button>
-                    </form>
-                    @endif
-                </div>
+                            @if(!$status)
+                                <form method="POST" action="{{ route('watchlist.store') }}">
+                                    @csrf
+                                    <input type="hidden" name="title_id" value="{{ $t->id }}">
+                                    <button class="text-[11px] rounded-md bg-accent-purple text-white px-2.5 py-1 hover:opacity-90">
+                                        + Watchlist
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @else
+                        {{-- Admin quick action --}}
+                        <div class="px-3 pb-3 -mt-1 flex items-center justify-end">
+                            <a href="{{ route('admin.titles.edit', $t) }}"
+                            class="text-[11px] px-2.5 py-1 rounded-md border border-surface hover:bg-surface">
+                                Bewerken
+                            </a>
+                        </div>
+                    @endcan
                 @endauth
             </div>
             @endforeach

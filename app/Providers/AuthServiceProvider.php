@@ -18,5 +18,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('admin-access', function ($user) {
             return $user->role === 'admin';
         });
+        Gate::define('use-watchlist', function ($user) {
+            return ! $user->can('admin-access');
+    });
     }
 }

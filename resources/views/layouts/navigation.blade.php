@@ -8,7 +8,10 @@
                     <span class="font-semibold text-lg tracking-wide">CineMap</span>
                 </a>
             </div>
-            @unless (request()->routeIs('home') || request()->routeIs('watchlist.index'))
+            {{-- 
+            @unless (request()->routeIs('home') 
+                || request()->routeIs('watchlist.index') 
+                || request()->routeIs('watchlist.show'))
                 <div class="hidden md:block flex-1 max-w-xl mx-6">
                     <form action="{{ route('home') }}" method="GET">
                         <label class="sr-only" for="q">Zoek</label>
@@ -29,13 +32,16 @@
                     </form>
                 </div>
             @endunless
+            --}}
 
             <div class="ml-auto hidden sm:flex items-center gap-3">
                 @auth
-                    <a href="{{ route('watchlist.index') }}"
-                       class="px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
-                        Watchlist
-                    </a>
+                    @can('use-watchlist')
+                        <a href="{{ route('watchlist.index') }}"
+                        class="px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                            Watchlist
+                        </a>
+                    @endcan
                 @endauth
 
                 @can('admin-access')

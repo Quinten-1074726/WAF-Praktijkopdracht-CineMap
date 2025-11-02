@@ -15,7 +15,6 @@
             {{ ucfirst($title->type) }} : {{ $title->year ?? 'n/a' }} : {{ $title->platform?->name }}
           </div>
 
-          {{-- ⬇️ NIEUW: genre-badges --}}
           @if($title->genres->isNotEmpty())
             <div class="mt-2 flex flex-wrap gap-2">
               @foreach($title->genres as $g)
@@ -29,28 +28,43 @@
           <p class="mt-4">{{ $title->description ?? 'Geen beschrijving.' }}</p>
         </div>
 
-        {{-- actions (watchlist) --}}
         <div class="mt-5">
           @auth
-            @if(!$inWatchlist)
-              <form method="POST" action="{{ route('watchlist.store') }}">
-                @csrf
-                <input type="hidden" name="title_id" value="{{ $title->id }}">
-                <button class="rounded-md bg-accent-purple text-white px-4 py-2 hover:opacity-90">
-                  + Voeg toe aan watchlist
-                </button>
-              </form>
+            @can('use-watchlist')
+              @if(!$inWatchlist)
+                <form method="POST" action="{{ route('watchlist.store') }}">
+                  @csrf
+                  <input type="hidden" name="title_id" value="{{ $title->id }}">
+                  <button class="rounded-md bg-accent-purple text-white px-4 py-2 hover:opacity-90">
+                    + Voeg toe aan watchlist
+                  </button>
+                </form>
+              @else
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-text-muted">
+                    In watchlist ({{ strtolower(str_replace('_',' ',$inWatchlist->status)) }})
+                  </span>
+                  <a href="{{ route('watchlist.index') }}"
+                    class="text-sm rounded-md border border-surface px-3 py-2 hover:bg-surface">
+                    Bekijk watchlist
+                  </a>
+                </div>
+              @endif
             @else
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-text-muted">
-                  In watchlist ({{ strtolower(str_replace('_',' ',$inWatchlist->status)) }})
-                </span>
-                <a href="{{ route('watchlist.index') }}"
-                   class="text-sm rounded-md border border-surface px-3 py-2 hover:bg-surface">
-                  Bekijk watchlist
+              {{-- Admin acties --}}
+              <div class="flex items-center gap-2">
+                <a href="{{ route('admin.titles.edit', $title) }}"
+                  class="rounded-md border border-surface px-3 py-2 hover:bg-surface text-sm">
+                  Bewerken
                 </a>
+                <form method="POST" action="{{ route('admin.titles.toggle-publish', $title) }}">
+                  @csrf
+                  <button class="rounded-md text-sm {{ $title->is_published ? 'bg-yellow-600/30 text-yellow-100' : 'bg-green-600/30 text-green-100' }} px-3 py-2">
+                    {{ $title->is_published ? 'Unpublish' : 'Publish' }}
+                  </button>
+                </form>
               </div>
-            @endif
+            @endcan
           @else
             <a href="{{ route('login') }}" class="text-sm underline">Log in</a>
             <span class="text-sm text-text-muted">om aan je watchlist toe te voegen</span>
