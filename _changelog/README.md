@@ -17,7 +17,6 @@ Elke sectie krijgt de volgende structuur:
 ### **2 november 2025**
 **ADD: Filterfunctie op homepage**  
 - Nieuwe filterbalk met type, platform, jaarrange en meerdere genres met Alpine.  
-- Resultaten behouden via `withQueryString()`.
 
 **UPDATE: Navbar & zoekbalk**  
 - Zoekveld verborgen op home, watchlist en adminpagina’s.  
