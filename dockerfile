@@ -16,8 +16,8 @@ RUN composer install \
 FROM php:8.3-fpm-bullseye
 
 RUN apt-get update && apt-get install -y \
-    nginx supervisor curl zip unzip git libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql opcache \
+    nginx supervisor curl zip unzip git libpng-dev libonig-dev libxml2-dev libpq-dev \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql opcache \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
@@ -25,7 +25,6 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 COPY --from=vendor /app/vendor /var/www/html/vendor
-
 COPY --from=assets /app/public/build /var/www/html/public/build
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
@@ -34,5 +33,9 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 EXPOSE 80
-CMD ["supervisord", "-n"]
+
