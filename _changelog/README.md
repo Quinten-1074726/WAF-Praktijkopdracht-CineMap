@@ -16,18 +16,18 @@ Elke sectie krijgt de volgende structuur:
 ## 📅 Changelog
 ### **2 november 2025**
 **ADD: Filterfunctie op homepage**  
-- Nieuwe filterbalk met type, platform, jaarrange en meerdere genres (Alpine dropdown met badges).  
+- Nieuwe filterbalk met type, platform, jaarrange en meerdere genres met Alpine.  
 - Resultaten behouden via `withQueryString()`.
 
 **UPDATE: Navbar & zoekbalk**  
 - Zoekveld verborgen op home, watchlist en adminpagina’s.  
-- Watchlist- en Admin-knop apart weergegeven (policy gebaseerd).  
-- Styling verbeterd (hover, spacing).
+- Watchlist- en Admin-knop apart weergegeven.  
+- Styling verbeterd .
 
 **ADD: Preview bij poster-upload (admin)**  
 - Live preview bij uploaden van posterafbeeldingen.  
 - Knop om afbeelding te verwijderen/resetten.  
-- Ondersteunt jpg, png en webp (max 2MB).
+- Ondersteunt jpg, png en webp .
 
 **UPDATE: Genres verplicht bij titel**  
 - Minimaal één genre vereist bij aanmaken/bewerken titel.  
