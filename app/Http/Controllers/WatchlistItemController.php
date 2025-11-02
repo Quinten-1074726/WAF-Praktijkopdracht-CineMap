@@ -4,25 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\WatchlistItem;
 use Illuminate\Http\Request;
+use App\Models\Genre;
 
 class WatchlistItemController extends Controller
 {
     // GET /watchlist
     public function index(Request $request)
     {
-        $user = $request->user();
-
-        $status = $request->get('status');  
-        $q      = $request->get('q');        
+        $user     = $request->user();
+        $status   = $request->get('status');
+        $q        = $request->get('q');
+        $genreIds = array_filter((array) $request->get('genres')); 
 
         $items = WatchlistItem::query()
-            ->with(['title.platform'])
+            ->with(['title.platform','title.genres']) 
             ->where('user_id', $user->id)
             ->when($status, fn($qb) => $qb->where('status', $status))
             ->when($q, function ($qb) use ($q) {
                 $qb->whereHas('title', function ($sub) use ($q) {
                     $sub->where('title', 'like', "%{$q}%")
                         ->orWhere('description', 'like', "%{$q}%");
+                });
+            })
+            ->when($genreIds, function ($qb) use ($genreIds) { 
+                $qb->whereHas('title.genres', function ($g) use ($genreIds) {
+                    $g->whereIn('genres.id', $genreIds);
                 });
             })
             ->orderByDesc('created_at')
@@ -38,7 +44,11 @@ class WatchlistItemController extends Controller
             ->where('status', 'GEZIEN')
             ->count();
 
-        return view('watchlist.index', compact('items','status','q','counts','seenCount'));
+        $genres = Genre::orderBy('name')->get();
+
+        return view('watchlist.index', compact(
+            'items','status','q','counts','seenCount','genres','genreIds'
+        ));
     }
 
     /**

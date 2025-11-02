@@ -1,6 +1,6 @@
 <nav x-data="{ open: false }" class="bg-navbar text-text-primary border-b border-surface">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
+        <div class="flex h-16 items-center gap-4">
 
             <div class="flex items-center gap-3">
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
@@ -8,40 +8,43 @@
                     <span class="font-semibold text-lg tracking-wide">CineMap</span>
                 </a>
             </div>
-            @unless (request()->routeIs('home'))
-            <div class="hidden md:block flex-1 max-w-xl mx-6">
-                <form action="{{ route('home') }}" method="GET">
-                    <label class="sr-only" for="q">Zoek</label>
-                    <div class="flex">
-                        <input
-                            id="q"
-                            name="q"
-                            type="text"
-                            value="{{ request('q') }}"
-                            placeholder="Zoek films of series…"
-                            class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-purple focus:border-transparent"
-                        />
-                        <button type="submit"
-                                class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
-                            Zoeken
-                        </button>
-                    </div>
-                </form>
-            </div>
+            @unless (request()->routeIs('home') || request()->routeIs('watchlist.index'))
+                <div class="hidden md:block flex-1 max-w-xl mx-6">
+                    <form action="{{ route('home') }}" method="GET">
+                        <label class="sr-only" for="q">Zoek</label>
+                        <div class="flex">
+                            <input
+                                id="q"
+                                name="q"
+                                type="text"
+                                value="{{ request('q') }}"
+                                placeholder="Zoek films of series…"
+                                class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-purple focus:border-transparent"
+                            />
+                            <button type="submit"
+                                    class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
+                                Zoeken
+                            </button>
+                        </div>
+                    </form>
+                </div>
             @endunless
-            @auth
-                <a href="{{ route('watchlist.index') }}"
-                    class="hidden md:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
-                    Watchlist
-                </a>
-            @endauth
-            @can('admin-access')
-                <a href="{{ route('admin.dashboard') }}"
-                class="hidden sm:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
-                Admin
-                </a>
-            @endcan
-            <div class="hidden sm:flex items-center gap-3">
+
+            <div class="ml-auto hidden sm:flex items-center gap-3">
+                @auth
+                    <a href="{{ route('watchlist.index') }}"
+                       class="px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                        Watchlist
+                    </a>
+                @endauth
+
+                @can('admin-access')
+                    <a href="{{ route('admin.dashboard') }}"
+                       class="px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
+                        Admin
+                    </a>
+                @endcan
+
                 @guest
                     <a href="{{ route('login') }}"
                        class="px-3 py-2 rounded-lg bg-accent-purple hover:opacity-90 transition">
@@ -81,8 +84,7 @@
                     </x-dropdown>
                 @endauth
             </div>
-
-            <div class="sm:hidden">
+            <div class="sm:hidden ml-auto">
                 <button @click="open = ! open"
                         class="inline-flex items-center justify-center p-2 rounded-md hover:bg-surface focus:outline-none transition">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -97,26 +99,27 @@
             </div>
         </div>
     </div>
-
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-surface">
         <div class="px-4 py-3 space-y-3">
-            <form action="{{ route('home') }}" method="GET">
-                <label class="sr-only" for="q-mobile">Zoek</label>
-                <div class="flex">
-                    <input
-                        id="q-mobile"
-                        name="q"
-                        type="text"
-                        value="{{ request('q') }}"
-                        placeholder="Zoek films of series…"
-                        class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-gold focus:border-transparent"
-                    />
-                    <button type="submit"
-                        class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
-                        Zoeken
-                    </button>
-                </div>
-            </form>
+            @unless (request()->routeIs('home') || request()->routeIs('watchlist.index'))
+                <form action="{{ route('home') }}" method="GET">
+                    <label class="sr-only" for="q-mobile">Zoek</label>
+                    <div class="flex">
+                        <input
+                            id="q-mobile"
+                            name="q"
+                            type="text"
+                            value="{{ request('q') }}"
+                            placeholder="Zoek films of series…"
+                            class="w-full rounded-l-lg bg-surface border border-surface/80 px-3 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-gold focus:border-transparent"
+                        />
+                        <button type="submit"
+                            class="rounded-r-lg bg-accent-purple px-4 text-white text-sm hover:opacity-90 transition">
+                            Zoeken
+                        </button>
+                    </div>
+                </form>
+            @endunless
 
             @guest
                 <div class="flex gap-2">
@@ -124,16 +127,13 @@
                     <a href="{{ route('register') }}" class="flex-1 px-3 py-2 rounded-lg border border-surface text-center">Maak account</a>
                 </div>
             @endguest
+
             @auth
-                <a href="{{ route('watchlist.index') }}"
-                class="hidden sm:inline-block px-3 py-2 rounded-lg border border-surface hover:bg-surface transition">
-                Watchlist
-                </a>
-            @endauth
-            @auth
-                <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md hover:bg-surface">
-                    Profile
-                </a>
+                <a href="{{ route('watchlist.index') }}" class="block px-3 py-2 rounded-md hover:bg-surface">Watchlist</a>
+                @can('admin-access')
+                    <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-md hover:bg-surface">Admin</a>
+                @endcan
+                <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md hover:bg-surface">Profile</a>
                 <form method="POST" action="{{ route('logout') }}" class="px-3 py-2">
                     @csrf
                     <button type="submit" class="w-full text-left px-3 py-2 rounded-md bg-accent-gold text-background">
