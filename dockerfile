@@ -1,32 +1,38 @@
 FROM node:20-alpine AS assets
 WORKDIR /app
 COPY package*.json ./
-COPY vite.config.js postcss.config.js tailwind.config.js ./
+RUN npm ci
 COPY resources ./resources
-RUN npm ci && npm run build
+COPY vite.config.js tailwind.config.js postcss.config.js ./
+RUN npm run build
+
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install \
+    --no-dev --no-interaction --prefer-dist --no-progress \
+    --optimize-autoloader --no-scripts
 
 FROM php:8.3-fpm-bullseye
 
 RUN apt-get update && apt-get install -y \
-    git unzip libpq-dev libzip-dev nginx supervisor \
- && docker-php-ext-install pdo pdo_pgsql zip \
- && rm -rf /var/lib/apt/lists/*
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+    nginx supervisor curl zip unzip git libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql opcache \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --optimize-autoloader
+COPY . /var/www/html
 
-COPY . .
+COPY --from=vendor /app/vendor /var/www/html/vendor
 
-COPY --from=assets /app/public/build ./public/build
-
-RUN chown -R www-data:www-data storage bootstrap/cache
+COPY --from=assets /app/public/build /var/www/html/public/build
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
 EXPOSE 80
-CMD ["supervisord","-n","-c","/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["supervisord", "-n"]
